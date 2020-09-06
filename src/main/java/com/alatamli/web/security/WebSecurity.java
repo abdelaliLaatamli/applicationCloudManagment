@@ -30,7 +30,18 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				// .antMatchers(HttpMethod.POST , "/users/**").permitAll() // request don't need be authenticated
 				.anyRequest().authenticated().and() // others must be authenticated 
-			.addFilter(new AuthenticationFilter(authenticationManager()));
+			// .addFilter(new AuthenticationFilter(authenticationManager()));
+			.addFilter( getAuthenticationFilter() );
+	}
+	
+	
+	protected AuthenticationFilter getAuthenticationFilter() throws Exception {
+		
+		final AuthenticationFilter filter = new AuthenticationFilter(authenticationManager());
+		filter.setFilterProcessesUrl("/auth/login");
+		
+		return filter ;
+		
 	}
 
 	@Override

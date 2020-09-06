@@ -59,7 +59,19 @@ public class AuthService implements UserDetailsService {
 		
 	}
 
-
+	public UserDto getUser(String email ) {
+		
+		UserEntity user = userRepository.findByEmail(email);
+		
+		if( user == null ) throw new RuntimeException("user not found !! " + email );
+		
+		UserDto userDto = modelMapper.map(user, UserDto.class);
+		
+		return userDto ;
+		
+	}
+	
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
