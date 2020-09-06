@@ -35,21 +35,29 @@
 		<!-- end Data -->
 		
 		<!-- security -->
-		
 			<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
 			<dependency>
 			    <groupId>org.springframework.boot</groupId>
 			    <artifactId>spring-boot-starter-security</artifactId>
 			</dependency>
 		
-			<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+			<!--  https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt --> 
 			<dependency>
 			    <groupId>io.jsonwebtoken</groupId>
 			    <artifactId>jjwt</artifactId>
 			    <version>0.9.1</version>
 			</dependency>
-		
+			
 		<!-- End Security -->
+		
+		<!-- modelMapper -->
+			<dependency>
+				  <groupId>org.modelmapper</groupId>
+				  <artifactId>modelmapper</artifactId>
+				  <version>2.3.0</version>
+			</dependency>
+		<!-- End ModelMapper -->
+		
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

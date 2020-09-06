@@ -20,13 +20,13 @@ public class UserEntity {
 	@GeneratedValue
 	private long id ;
 	
-	@Column( nullable = false , length = 80 )
+	@Column( unique = true , nullable = false , length = 80 )
 	private String email;
 	
-	@Column(nullable = false , length = 50)
+	@Column( nullable = false , length = 50)
 	private String username;
 	
-	@Column(  nullable = false )
+	@Column( nullable = false )
 	private String password;
 	
 	@Column( nullable = true )
@@ -109,6 +109,8 @@ public class UserEntity {
 	public void setAccounts(Set<AccountEntity> accounts) {
 		this.accounts = accounts;
 	}
+	
+
 	
 
 }
