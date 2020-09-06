@@ -31,7 +31,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 				// .antMatchers(HttpMethod.POST , "/users/**").permitAll() // request don't need be authenticated
 				.anyRequest().authenticated().and() // others must be authenticated 
 			// .addFilter(new AuthenticationFilter(authenticationManager()));
-			.addFilter( getAuthenticationFilter() );
+			.addFilter( getAuthenticationFilter() )
+			.addFilter(new AuthorizationFilter(authenticationManager()));
 	}
 	
 	
