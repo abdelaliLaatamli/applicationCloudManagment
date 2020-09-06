@@ -1,7 +1,13 @@
 package com.alatamli.web.services;
 
+import java.util.ArrayList;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +18,7 @@ import com.alatamli.web.repositories.UserRepository;
 import com.alatamli.web.shared.dto.UserDto;
 
 @Service
-public class AuthService {
+public class AuthService implements UserDetailsService {
 
 	@Autowired
 	ModelMapper modelMapper;
@@ -51,6 +57,17 @@ public class AuthService {
 		
 		return newUser;
 		
+	}
+
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		
+		UserEntity userEntity =  userRepository.findByEmail(username);
+		
+		if( userEntity == null ) throw new UsernameNotFoundException("User not Exist : " + username);
+		
+		return new User(userEntity.getEmail() , userEntity.getPassword() , new ArrayList<>()) ;
 	}
 	
 }
