@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alatamli.web.requests.UserRequest;
-import com.alatamli.web.responces.UserResponce;
+import com.alatamli.web.responces.UserResponse;
 import com.alatamli.web.services.AuthService;
 import com.alatamli.web.shared.dto.UserDto;
 
@@ -26,15 +26,15 @@ public class UserContoller {
 	ModelMapper modelMapper;
 
 	@PostMapping("register")
-	public ResponseEntity<UserResponce>  register( @RequestBody UserRequest userRequest ) {
+	public ResponseEntity<UserResponse>  register( @RequestBody UserRequest userRequest ) {
 		
 		UserDto user = modelMapper.map(userRequest, UserDto.class);
 
 		UserDto newUser = authService.createUser(user);
 		
-		UserResponce userResponce = modelMapper.map(newUser, UserResponce.class);
+		UserResponse userResponce = modelMapper.map(newUser, UserResponse.class);
 		
-		return new ResponseEntity<UserResponce> ( userResponce , HttpStatus.CREATED );
+		return new ResponseEntity<UserResponse> ( userResponce , HttpStatus.CREATED );
 	}
 	
 

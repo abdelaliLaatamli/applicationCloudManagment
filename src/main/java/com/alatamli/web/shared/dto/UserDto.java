@@ -1,6 +1,6 @@
 package com.alatamli.web.shared.dto;
 
-import com.alatamli.web.entities.EntityEntity;
+
 
 public class UserDto {
 
@@ -9,7 +9,16 @@ public class UserDto {
 	private String username;
 	private String password;
 	private int systemId ;
-	private EntityEntity entity;
+	
+	private EntityDto entity;
+
+	public EntityDto getEntity() {
+		return entity;
+	}
+
+	public void setEntity(EntityDto entity) {
+		this.entity = entity;
+	}
 	
 	public long getId() {
 		return id;
@@ -40,12 +49,6 @@ public class UserDto {
 	}
 	public void setSystemId(int systemId) {
 		this.systemId = systemId;
-	}
-	public EntityEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(EntityEntity entity) {
-		this.entity = entity;
 	}
 	
 }
