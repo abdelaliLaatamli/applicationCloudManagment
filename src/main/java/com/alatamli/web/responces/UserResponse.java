@@ -3,13 +3,13 @@ package com.alatamli.web.responces;
 
 
 
-public class UserResponce {
+public class UserResponse {
 	
 	private long id ;
 	private String email;
 	private String username;
 	private int systemId ;	
-	private EntityResponce entity;
+	private EntityResponse entity;
 	
 	public long getId() {
 		return id;
@@ -35,10 +35,10 @@ public class UserResponce {
 	public void setSystemId(int systemId) {
 		this.systemId = systemId;
 	}
-	public EntityResponce getEntity() {
+	public EntityResponse getEntity() {
 		return entity;
 	}
-	public void setEntity(EntityResponce entity) {
+	public void setEntity(EntityResponse entity) {
 		this.entity = entity;
 	}
 

@@ -1,13 +1,19 @@
 package com.alatamli.web.entities;
 
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 
@@ -28,6 +34,22 @@ public class EntityEntity {
 	
 	@OneToMany( cascade = CascadeType.ALL , mappedBy = "entity" )
 	private List<UserEntity> users ;
+	
+	@ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+	@JoinTable(name = "entities_providers" ,
+			joinColumns = { @JoinColumn(name="entity_id") } ,
+			inverseJoinColumns = { @JoinColumn(name="provider_id") })
+	private Set<ProviderEntity> providers = new HashSet<>();
+
+
+	public Set<ProviderEntity> getProviders() {
+		return providers;
+	}
+
+
+	public void setProviders(Set<ProviderEntity> providers) {
+		this.providers = providers;
+	}
 
 
 	public long getId() {

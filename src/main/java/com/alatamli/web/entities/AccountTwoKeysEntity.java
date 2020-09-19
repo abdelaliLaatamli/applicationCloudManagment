@@ -15,7 +15,6 @@ public class AccountTwoKeysEntity extends AccountEntity {
 	@Column
 	private String accessKey;
 	
-	
 	@Column
 	private String secriteKey;
 	

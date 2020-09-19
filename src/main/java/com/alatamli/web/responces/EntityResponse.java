@@ -2,7 +2,7 @@ package com.alatamli.web.responces;
 
 
 
-public class EntityResponce {
+public class EntityResponse {
 
 	private long id;
 	private String name;
