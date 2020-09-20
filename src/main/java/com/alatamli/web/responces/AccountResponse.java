@@ -1,7 +1,7 @@
 package com.alatamli.web.responces;
 
 
-public abstract class AccountResponse {
+public class AccountResponse {
 	
 
 	protected long id;
