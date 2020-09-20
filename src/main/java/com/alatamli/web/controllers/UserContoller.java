@@ -4,7 +4,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +37,25 @@ public class UserContoller {
 		UserResponse userResponce = modelMapper.map(newUser, UserResponse.class);
 		
 		return new ResponseEntity<UserResponse> ( userResponce , HttpStatus.CREATED );
+	}
+	
+	
+	@PutMapping("/{userId}")
+	public UserRequest updateUser( @PathVariable("userId") long userId , @RequestBody UserRequest userRequest  ) {
+		
+		
+		
+		
+		return userRequest ;
+	}
+	
+	@PutMapping("/{userId}/pwdreset")
+	public long resetpassword( @PathVariable("userId") long userId , @RequestBody UserRequest userRequest  ) {
+		
+		
+		
+		
+		return userId ;
 	}
 	
 

@@ -29,33 +29,33 @@ public abstract class AccountEntity {
 
 	@Id
 	@GeneratedValue
-	private long id;
+	protected long id;
 	
 	@Column( nullable = false , length = 80 )
-	private String name;
+	protected String name;
 	
 	@Column( nullable = true )
-	private String proxy;
+	protected String proxy;
 	
 	@Column(nullable = false)
-	private boolean isActive = true;
+	protected boolean isActive = true;
 	
 	@ManyToOne
 	@JoinColumn(name="provider_id")
-	private ProviderEntity provider;
+	protected ProviderEntity provider;
 	
 	@OneToOne(mappedBy = "account" , cascade = CascadeType.ALL)
-	private SshKeyEntity sshKey;
+	protected SshKeyEntity sshKey;
 	
 	@ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
 	@JoinTable( name="accounts_users" ,
 				joinColumns = { @JoinColumn(name="account_id") } ,
 				inverseJoinColumns = {@JoinColumn(name="user_id")}
 			)
-	private Set<UserEntity> users = new HashSet<>();
+	protected Set<UserEntity> users = new HashSet<>();
 	
 	@OneToMany(cascade = CascadeType.ALL , mappedBy = "account")
-	private List<InstanceEntity> instances ;
+	protected List<InstanceEntity> instances ;
 
 	public long getId() {
 		return id;

@@ -8,7 +8,15 @@ public class AccountDto {
 	protected String proxy;
 	protected boolean isActive = true;
 	protected ProviderDto provider;
+	protected SshKeyDto sshKey ;
 	
+	
+	public SshKeyDto getSshKey() {
+		return sshKey;
+	}
+	public void setSshKey(SshKeyDto sshKey) {
+		this.sshKey = sshKey;
+	}
 	public long getId() {
 		return id;
 	}

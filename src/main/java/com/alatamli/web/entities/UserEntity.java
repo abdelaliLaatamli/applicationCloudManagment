@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
-import com.alatamli.web.enums.IpStatus;
 import com.alatamli.web.enums.UserRole;
 
 @Entity(name="users")

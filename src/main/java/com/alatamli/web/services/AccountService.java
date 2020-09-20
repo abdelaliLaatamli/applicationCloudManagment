@@ -79,6 +79,8 @@ public class AccountService {
 		users.add(user);
 		accountEntity.setUsers( users );
 		
+		accountEntity.getSshKey().setAccount(accountEntity);
+		
 		AccountTwoKeysEntity newAccount = accountRepository.save(accountEntity);
 		
 		AccountTwoKeysDto newAccountDto = modelMapper.map( newAccount , AccountTwoKeysDto.class );
@@ -101,6 +103,8 @@ public class AccountService {
 		users.add(user);
 		accountEntity.setUsers( users );
 		
+		accountEntity.getSshKey().setAccount(accountEntity);
+		
 		AccountOneKeyEntity newAccount = accountRepository.save(accountEntity);
 		
 		AccountOneKeyDto newAccountDto = modelMapper.map( newAccount , AccountOneKeyDto.class );
@@ -122,6 +126,8 @@ public class AccountService {
 		Set<UserEntity> users = accountEntity.getUsers();
 		users.add(user);
 		accountEntity.setUsers( users );
+		
+		accountEntity.getSshKey().setAccount(accountEntity);
 		
 		AccountFourKeysEntity newAccount = accountRepository.save(accountEntity);
 		

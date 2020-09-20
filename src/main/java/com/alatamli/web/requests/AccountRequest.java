@@ -1,7 +1,6 @@
 package com.alatamli.web.requests;
 
 import java.util.List;
-
 import com.alatamli.web.enums.KeysType;
 
 
@@ -12,18 +11,17 @@ public class AccountRequest {
 	private String proxy;
 	private SshKeyRequest sshKey;
 	
-	private String token ;
+	private KeysType accountType;
+	private List<RegionRequest> regions ;
 
+	private String token ;
 	private String accessKey;
 	private String secriteKey;
-	private List<RegionRequest> regions ;
-	
-
 	private String subscription;
 	private String tenant;
 	
 	
-	private KeysType accountType;
+
 
 	
 	

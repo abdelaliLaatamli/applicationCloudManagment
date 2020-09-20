@@ -1,7 +1,6 @@
 package com.alatamli.web.requests;
 
-
-
+import com.alatamli.web.enums.UserRole;
 
 public class UserRequest {
 
@@ -10,7 +9,15 @@ public class UserRequest {
 	private String username;
 	private String password;
 	private int systemId ;
+	private UserRole role;
 	
+	
+	public UserRole getRole() {
+		return role;
+	}
+	public void setRole(UserRole role) {
+		this.role = role;
+	}
 	public String getEmail() {
 		return email;
 	}

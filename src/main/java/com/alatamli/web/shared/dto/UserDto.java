@@ -1,6 +1,6 @@
 package com.alatamli.web.shared.dto;
 
-
+import com.alatamli.web.enums.UserRole;
 
 public class UserDto {
 
@@ -9,6 +9,7 @@ public class UserDto {
 	private String username;
 	private String password;
 	private int systemId ;
+	private UserRole role;
 	
 	private EntityDto entity;
 
@@ -49,6 +50,14 @@ public class UserDto {
 	}
 	public void setSystemId(int systemId) {
 		this.systemId = systemId;
+	}
+
+	public UserRole getRole() {
+		return role;
+	}
+
+	public void setRole(UserRole role) {
+		this.role = role;
 	}
 	
 }
