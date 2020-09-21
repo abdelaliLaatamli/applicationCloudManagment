@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.alatamli.web.entities.EntityEntity;
 import com.alatamli.web.entities.UserEntity;
+import com.alatamli.web.enums.UserRole;
 import com.alatamli.web.repositories.EntityRepository;
 import com.alatamli.web.repositories.UserRepository;
 import com.alatamli.web.shared.dto.UserDto;
@@ -50,6 +51,8 @@ public class AuthService implements UserDetailsService {
 		user.setPassword( bCryptPasswordEncoder.encode(user.getPassword() ) );
 		
 		user.setEntity(entity);
+		
+		if( user.getRole() == null ) user.setRole(UserRole.AGENT);
 		
 		UserEntity newUserEntity = userRepository.save(user);
 		
