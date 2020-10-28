@@ -29,11 +29,11 @@ public class ProviderEntity {
 	@Column 
 	private KeysType providerKeysType;
 
-	@OneToMany( cascade = CascadeType.ALL , mappedBy = "provider" )
+	@OneToMany( cascade = CascadeType.ALL , mappedBy = "provider" , fetch = FetchType.EAGER )
 	private List<AccountEntity> accounts ;
 	
 
-	@ManyToMany( fetch = FetchType.LAZY , cascade = CascadeType.ALL , mappedBy = "providers" )
+	@ManyToMany( fetch = FetchType.EAGER , cascade = CascadeType.ALL , mappedBy = "providers" )
 	private Set<EntityEntity> entities = new HashSet<>();
 
 
@@ -61,6 +61,14 @@ public class ProviderEntity {
 		this.accounts = accounts;
 	}
 	
+	public KeysType getProviderKeysType() {
+		return providerKeysType;
+	}
+
+	public void setProviderKeysType(KeysType providerKeysType) {
+		this.providerKeysType = providerKeysType;
+	}
+
 	public Set<EntityEntity> getEntities() {
 		return entities;
 	}
@@ -69,13 +77,7 @@ public class ProviderEntity {
 		this.entities = entities;
 	}
 
-	public KeysType getProviderKeysType() {
-		return providerKeysType;
-	}
 
-	public void setProviderKeysType(KeysType providerKeysType) {
-		this.providerKeysType = providerKeysType;
-	}
 	
 
 

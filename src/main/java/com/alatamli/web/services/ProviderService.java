@@ -9,11 +9,13 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alatamli.web.entities.EntityEntity;
 import com.alatamli.web.entities.ProviderEntity;
 import com.alatamli.web.entities.UserEntity;
+import com.alatamli.web.repositories.EntityRepository;
 import com.alatamli.web.repositories.ProviderRepository;
 import com.alatamli.web.repositories.UserRepository;
-import com.alatamli.web.requests.ProviderRequest;
+import com.alatamli.web.requests.ProviderAttachRequest;
 import com.alatamli.web.shared.dto.ProviderDto;
 
 @Service
@@ -24,6 +26,9 @@ public class ProviderService {
 	
 	@Autowired
 	ProviderRepository providerRepository;
+	
+	@Autowired
+	EntityRepository entityRepository;
 	
 	@Autowired
 	ModelMapper modelMapper;
@@ -52,9 +57,9 @@ public class ProviderService {
 		return providersDto;
 	}
 
-	public ProviderDto addProvider(ProviderRequest providerRequest) {
+	public ProviderDto addProvider(ProviderDto provider) {
 		
-		ProviderEntity providerEntity = modelMapper.map(providerRequest, ProviderEntity.class);
+		ProviderEntity providerEntity = modelMapper.map( provider , ProviderEntity.class);
 		
 		ProviderEntity newProvider = providerRepository.save(providerEntity);
 		
@@ -62,6 +67,53 @@ public class ProviderService {
 		
 		return providerDto;
 	}
+
+	public ProviderDto updateProvider(long providerId, ProviderDto provider) {
+
+		ProviderEntity providerEntity = providerRepository.findById(providerId)
+				.orElseThrow(( ) -> new IllegalArgumentException("there is no provider of this id , please check id"));
+		
+		providerEntity.setName(provider.getName());
+		providerEntity.setProviderKeysType(provider.getProviderKeysType());
+		
+		ProviderEntity updatedProvider = providerRepository.save( providerEntity ); 
+		
+		ProviderDto providerDto = modelMapper.map(updatedProvider, ProviderDto.class);
+		
+		return providerDto;
+	}
+
+	public ProviderDto attachProviderToEntity(long providerId, ProviderAttachRequest entityList) {
+
+		ProviderEntity providerEntity = providerRepository.findById(providerId)
+				.orElseThrow(( ) -> new IllegalArgumentException("there is no provider of this id , please check id"));
+		
+		
+		
+		Set<EntityEntity> entities = providerEntity.getEntities();
+		
+		
+		for (long entityId : entityList.getEntities() ) {
+			
+			EntityEntity entity = entityRepository.findById(entityId).orElse( null );
+			
+			if( entity == null ) continue;
+			
+			if( entities.contains(entity) ) continue;
+			
+			entities.add(entity);
+			
+		}
+		
+		providerEntity.setEntities( entities);
+		
+		ProviderEntity updatedProvider = providerRepository.save( providerEntity ); 
+		
+		ProviderDto providerDto = modelMapper.map(updatedProvider, ProviderDto.class);
+		
+		return providerDto;
+	}
+
 	
 	
 	

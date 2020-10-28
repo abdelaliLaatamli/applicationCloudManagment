@@ -1,4 +1,4 @@
-package com.alatamli.web.responces;
+package com.alatamli.web.responses;
 
 import java.util.List;
 

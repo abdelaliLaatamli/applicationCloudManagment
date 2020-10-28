@@ -1,6 +1,8 @@
 package com.alatamli.web.shared.dto;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.alatamli.web.enums.KeysType;
 
@@ -11,7 +13,7 @@ public class ProviderDto {
 	private String name;
 	private KeysType providerKeysType;
 	private List<AccountDto> accounts ;
-	private List<EntityDto> entities ;
+	private Set<EntityDto> entities = new HashSet<>() ;
 	
 	public long getId() {
 		return id;
@@ -31,10 +33,10 @@ public class ProviderDto {
 	public void setAccounts(List<AccountDto> accounts) {
 		this.accounts = accounts;
 	}
-	public List<EntityDto> getEntities() {
+	public Set<EntityDto> getEntities() {
 		return entities;
 	}
-	public void setEntities(List<EntityDto> entities) {
+	public void setEntities(Set<EntityDto> entities) {
 		this.entities = entities;
 	}
 	public KeysType getProviderKeysType() {

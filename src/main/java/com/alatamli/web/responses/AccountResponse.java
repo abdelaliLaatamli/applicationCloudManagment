@@ -1,4 +1,4 @@
-package com.alatamli.web.responces;
+package com.alatamli.web.responses;
 
 
 public class AccountResponse {

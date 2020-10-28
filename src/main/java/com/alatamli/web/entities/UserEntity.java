@@ -39,6 +39,17 @@ public class UserEntity {
 	@Enumerated(EnumType.ORDINAL)
 	private UserRole role = UserRole.AGENT;
 	
+
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="entity_id")
+	private EntityEntity entity;
+	
+	
+	@ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL , mappedBy = "users")
+	private Set<AccountEntity> accounts = new HashSet<>();
+
+	
 	public UserRole getRole() {
 		return role;
 	}
@@ -47,15 +58,6 @@ public class UserEntity {
 	public void setRole(UserRole role) {
 		this.role = role;
 	}
-
-
-	@ManyToOne
-	@JoinColumn(name="entity_id")
-	private EntityEntity entity;
-	
-	
-	@ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL , mappedBy = "users")
-	private Set<AccountEntity> accounts = new HashSet<>();
 
 
 	public long getId() {

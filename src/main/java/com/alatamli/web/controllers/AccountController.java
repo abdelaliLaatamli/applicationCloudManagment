@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alatamli.web.requests.AccountRequest;
-import com.alatamli.web.responces.AccountResponse;
-import com.alatamli.web.responces.AccountResponseFourKeys;
-import com.alatamli.web.responces.AccountResponseOneKey;
-import com.alatamli.web.responces.AccountResponseTwoKeysDetails;
+import com.alatamli.web.responses.AccountResponse;
+import com.alatamli.web.responses.AccountResponseFourKeys;
+import com.alatamli.web.responses.AccountResponseOneKey;
+import com.alatamli.web.responses.AccountResponseTwoKeysDetails;
 import com.alatamli.web.services.AccountService;
 import com.alatamli.web.services.ProviderService;
 import com.alatamli.web.shared.dto.AccountDto;
@@ -50,28 +50,28 @@ public class AccountController {
 		
 	
 		List<AccountResponse> accountsResponse = null;
-		List<AccountDto> accounts = null ;
+		//List<AccountDto> accounts = null ;
 		Type listType  = null ;
 		
 		
 		ProviderDto provider = providerService.getProvider(providerId);
 		
 		switch (provider.getProviderKeysType()) {
-		case ONEKEY:
-			accounts = accountService.getAccountsOneKey( providerId , principal.getName());
-			listType  = new TypeToken<List<AccountResponseOneKey>>() {}.getType(); 
-			accountsResponse = modelMapper.map( accounts , listType);
+			case ONEKEY:
+				List<AccountOneKeyDto> accountsL = accountService.getAccountsOneKey( providerId , principal.getName());
+				listType  = new TypeToken<List<AccountResponseOneKey>>() {}.getType(); 
+				accountsResponse = modelMapper.map( accountsL , listType);
 			
 			break;
 		case TWOKEYS:
-				accounts = accountService.getAccountsTwoKeys( providerId , principal.getName());
+				List<AccountTwoKeysDto> accountsLs = accountService.getAccountsTwoKeys( providerId , principal.getName());
 				listType  = new TypeToken<List<AccountResponseTwoKeysDetails>>() {}.getType(); 
-				accountsResponse = modelMapper.map( accounts , listType);
+				accountsResponse = modelMapper.map( accountsLs , listType);
 			break ;
 		case FOURKEYS:
-			accounts = accountService.getAccountsFourKeys( providerId , principal.getName());
+			List<AccountFourKeysDto> accountsList = accountService.getAccountsFourKeys( providerId , principal.getName());
 			listType  = new TypeToken<List<AccountResponseFourKeys>>() {}.getType(); 
-			accountsResponse = modelMapper.map( accounts , listType);
+			accountsResponse = modelMapper.map( accountsList , listType);
 			
 			break;
 

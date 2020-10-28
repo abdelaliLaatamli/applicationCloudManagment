@@ -55,16 +55,29 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 		String username = ( (User) authResult.getPrincipal() ).getUsername();
 		
+		/*
 		String token = Jwts
 						.builder()
 						.setSubject(username)
+						.claim("name", userDto.getFirstName() )
 						.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
 						.signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET )
 						.compact();
+		*/
 		
 		AuthService authService = (AuthService) SpringApplicationContext.getBean("authService");
 		
 		UserDto userDto = authService.getUser(username);
+		
+		String token = Jwts
+				.builder()
+				.setSubject(username)
+				.claim("name", userDto.getUsername() )
+				.claim("role", userDto.getRole() )
+				.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+				.signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET )
+				.compact();
+		
 							
 		response.addHeader(SecurityConstants.HEADER_STRING , SecurityConstants.TOKEN_PREFIX + token );
 		response.addHeader( "user_id" , userDto.getId()+"" );

@@ -1,5 +1,8 @@
 package com.alatamli.web.shared.dto;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.alatamli.web.enums.UserRole;
 
 public class UserDto {
@@ -10,8 +13,8 @@ public class UserDto {
 	private String password;
 	private int systemId ;
 	private UserRole role;
-	
 	private EntityDto entity;
+	//private Set<AccountDto> accounts = new HashSet<>();
 
 	public EntityDto getEntity() {
 		return entity;
@@ -59,5 +62,14 @@ public class UserDto {
 	public void setRole(UserRole role) {
 		this.role = role;
 	}
+/*
+	public Set<AccountDto> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Set<AccountDto> accounts) {
+		this.accounts = accounts;
+	}
+	*/
 	
 }

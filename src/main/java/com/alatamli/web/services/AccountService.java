@@ -65,20 +65,23 @@ public class AccountService {
 		
 		accountEntity.setProvider(provider);
 		
-		RegionEntity region = accountEntity.getRegions().get(0);
+		if( accountEntity.getRegions() != null ) {
+			
+			RegionEntity region = accountEntity.getRegions().get(0);
+			region.setAccount(accountEntity);
+			ArrayList<RegionEntity> na = new ArrayList<>();
+			na.add( region );
+			accountEntity.setRegions( na );
+		}	
+
 		
-		region.setAccount(accountEntity);
 		
-		ArrayList<RegionEntity> na = new ArrayList<>();
-		
-		na.add( region );
-		
-		accountEntity.setRegions( na );
 		
 		Set<UserEntity> users = accountEntity.getUsers();
 		users.add(user);
 		accountEntity.setUsers( users );
 		
+		if( accountEntity.getSshKey() != null )
 		accountEntity.getSshKey().setAccount(accountEntity);
 		
 		AccountTwoKeysEntity newAccount = accountRepository.save(accountEntity);
@@ -103,6 +106,7 @@ public class AccountService {
 		users.add(user);
 		accountEntity.setUsers( users );
 		
+		if( accountEntity.getSshKey() != null )
 		accountEntity.getSshKey().setAccount(accountEntity);
 		
 		AccountOneKeyEntity newAccount = accountRepository.save(accountEntity);
@@ -127,6 +131,7 @@ public class AccountService {
 		users.add(user);
 		accountEntity.setUsers( users );
 		
+		if( accountEntity.getSshKey() != null )
 		accountEntity.getSshKey().setAccount(accountEntity);
 		
 		AccountFourKeysEntity newAccount = accountRepository.save(accountEntity);
@@ -136,31 +141,53 @@ public class AccountService {
 		return newAccountDto;
 	}
 
-	public List<AccountDto> getAccountsTwoKeys(long providerId, String name) {
+	public List<AccountTwoKeysDto> getAccountsTwoKeys(long providerId, String name) {
 		
 		List<AccountEntity> accountsEntity = accountRepository.findByProviderAndUser( providerId );
-		
+		/*
 		Type listType = new TypeToken<List<AccountTwoKeysDto>>() {}.getType();
-		List<AccountDto> accounts = modelMapper.map( accountsEntity , listType);
+		List<AccountTwoKeysDto> accounts = modelMapper.map( accountsEntity , listType);
+		*/
+		
+		List<AccountTwoKeysDto> accounts = new ArrayList<>();
+		for (AccountEntity accountEntity : accountsEntity) {
+			AccountTwoKeysDto account = modelMapper.map(accountEntity, AccountTwoKeysDto.class);
+			accounts.add(account);
+		}
 		
 		return accounts;
 	}
 
-	public List<AccountDto> getAccountsOneKey(long providerId, String name) {
+	public List<AccountOneKeyDto> getAccountsOneKey(long providerId, String name) {
 		
 		List<AccountEntity> accountsEntity = accountRepository.findByProviderAndUser( providerId );
-		
+		/*
 		Type listType = new TypeToken<List<AccountOneKeyDto>>() {}.getType();
-		List<AccountDto> accounts = modelMapper.map( accountsEntity , listType);
+		List<AccountOneKeyDto> accounts = modelMapper.map( accountsEntity , listType);
+		*/
+		List<AccountOneKeyDto> accounts = new ArrayList<>();
+		for (AccountEntity accountEntity : accountsEntity) {
+			AccountOneKeyDto account = modelMapper.map(accountEntity, AccountOneKeyDto.class);
+			accounts.add(account);
+		}
 		
 		return accounts;
 	}
 
-	public List<AccountDto> getAccountsFourKeys(long providerId, String name) {
+	public List<AccountFourKeysDto> getAccountsFourKeys(long providerId, String name) {
 		List<AccountEntity> accountsEntity = accountRepository.findByProviderAndUser( providerId );
 		
+		/*
 		Type listType = new TypeToken<List<AccountFourKeysDto>>() {}.getType();
-		List<AccountDto> accounts = modelMapper.map( accountsEntity , listType);
+		List<AccountFourKeysDto> accounts = modelMapper.map( accountsEntity , listType);
+		*/
+		
+		List<AccountFourKeysDto> accounts = new ArrayList<>();
+		for (AccountEntity accountEntity : accountsEntity) {
+			AccountFourKeysDto account = modelMapper.map(accountEntity, AccountFourKeysDto.class);
+			accounts.add(account);
+		}
+		
 		
 		return accounts;
 	}

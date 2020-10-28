@@ -38,6 +38,7 @@ public class EntityDto {
 	public void setUsers(List<UserDto> users) {
 		this.users = users;
 	}
+	
 	public Set<ProviderDto> getProviders() {
 		return providers;
 	}

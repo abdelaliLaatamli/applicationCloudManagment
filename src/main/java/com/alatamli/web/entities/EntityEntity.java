@@ -32,11 +32,11 @@ public class EntityEntity {
 	private int systemId;
 	
 	
-	@OneToMany( cascade = CascadeType.ALL , mappedBy = "entity" )
+	@OneToMany( mappedBy = "entity" , cascade = CascadeType.ALL , fetch = FetchType.EAGER)
 	private List<UserEntity> users ;
 	
 
-	@ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
 	@JoinTable(name = "entities_providers" ,
 			joinColumns = { @JoinColumn(name="entity_id") } ,
 			inverseJoinColumns = { @JoinColumn(name="provider_id") })
@@ -92,5 +92,8 @@ public class EntityEntity {
 	public void setProviders(Set<ProviderEntity> providers) {
 		this.providers = providers;
 	}
-	
+
+
+
+
 }
