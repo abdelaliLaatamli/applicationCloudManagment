@@ -17,6 +17,7 @@ import com.alatamli.web.entities.AccountTwoKeysEntity;
 import com.alatamli.web.entities.ProviderEntity;
 import com.alatamli.web.entities.RegionEntity;
 import com.alatamli.web.entities.UserEntity;
+import com.alatamli.web.enums.UserRole;
 import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.ProviderRepository;
 import com.alatamli.web.repositories.UserRepository;
@@ -144,11 +145,7 @@ public class AccountService {
 	public List<AccountTwoKeysDto> getAccountsTwoKeys(long providerId, String name) {
 		
 		List<AccountEntity> accountsEntity = accountRepository.findByProviderAndUser( providerId );
-		/*
-		Type listType = new TypeToken<List<AccountTwoKeysDto>>() {}.getType();
-		List<AccountTwoKeysDto> accounts = modelMapper.map( accountsEntity , listType);
-		*/
-		
+
 		List<AccountTwoKeysDto> accounts = new ArrayList<>();
 		for (AccountEntity accountEntity : accountsEntity) {
 			AccountTwoKeysDto account = modelMapper.map(accountEntity, AccountTwoKeysDto.class);
@@ -161,10 +158,7 @@ public class AccountService {
 	public List<AccountOneKeyDto> getAccountsOneKey(long providerId, String name) {
 		
 		List<AccountEntity> accountsEntity = accountRepository.findByProviderAndUser( providerId );
-		/*
-		Type listType = new TypeToken<List<AccountOneKeyDto>>() {}.getType();
-		List<AccountOneKeyDto> accounts = modelMapper.map( accountsEntity , listType);
-		*/
+
 		List<AccountOneKeyDto> accounts = new ArrayList<>();
 		for (AccountEntity accountEntity : accountsEntity) {
 			AccountOneKeyDto account = modelMapper.map(accountEntity, AccountOneKeyDto.class);
@@ -177,10 +171,6 @@ public class AccountService {
 	public List<AccountFourKeysDto> getAccountsFourKeys(long providerId, String name) {
 		List<AccountEntity> accountsEntity = accountRepository.findByProviderAndUser( providerId );
 		
-		/*
-		Type listType = new TypeToken<List<AccountFourKeysDto>>() {}.getType();
-		List<AccountFourKeysDto> accounts = modelMapper.map( accountsEntity , listType);
-		*/
 		
 		List<AccountFourKeysDto> accounts = new ArrayList<>();
 		for (AccountEntity accountEntity : accountsEntity) {
@@ -191,6 +181,76 @@ public class AccountService {
 		
 		return accounts;
 	}
+
+	public void deactivateAccount(long accountId , String email ) {
+		
+		UserEntity user = userRepository.findByEmail(email);
+		
+		AccountEntity accountEntity = accountRepository.findById(accountId)
+											.orElseThrow(() -> new IllegalArgumentException("there is no Account by this id"));
+		
+		if( user.getRole() == UserRole.AGENT || 
+			(user.getRole() == UserRole.LEADER && !accountEntity.getProvider().getEntities().contains(user.getEntity())) )
+				throw new RuntimeException("You don't have the permission");
+		accountEntity.setActive(false);
+		
+		accountRepository.save(accountEntity);
+		
+	}
+
+	public AccountDto editOneKeyAccount(long accountId, AccountOneKeyDto accountOneKeyDto, String name) {
+		
+		AccountEntity accountEntity = accountRepository.findById(accountId).orElseThrow( () -> new IllegalArgumentException("there is no Account by this id") );
+		
+		AccountOneKeyEntity account = modelMapper.map(accountEntity, AccountOneKeyEntity.class);
+		
+		account.setName(accountOneKeyDto.getName());
+		account.setToken(accountOneKeyDto.getToken());
+		
+		AccountOneKeyEntity newAccount = accountRepository.save(account);
+		AccountOneKeyDto newAccountDto = modelMapper.map( newAccount , AccountOneKeyDto.class );
+		
+		return newAccountDto;
+
+	}
+
+	public AccountDto editTwoKeysAccount(long accountId, AccountTwoKeysDto accountTwoKeysDto, String name) {
+		
+		AccountEntity accountEntity = accountRepository.findById(accountId).orElseThrow( () -> new IllegalArgumentException("there is no Account by this id") );
+		
+		AccountTwoKeysEntity account = modelMapper.map( accountEntity , AccountTwoKeysEntity.class);
+		
+		account.setName(accountTwoKeysDto.getName());
+		account.setAccessKey(accountTwoKeysDto.getAccessKey());
+		account.setSecriteKey(accountTwoKeysDto.getSecriteKey());
+	
+		
+		AccountTwoKeysEntity newAccount = (AccountTwoKeysEntity) accountRepository.save(account);
+		
+		AccountTwoKeysDto newAccountDto = modelMapper.map( newAccount , AccountTwoKeysDto.class );
+		
+		return newAccountDto;
+	}
+
+	public AccountDto editFourKeysAccount(long accountId, AccountFourKeysDto accountFourKeysDto, String name) {
+		
+		AccountEntity accountEntity = accountRepository.findById(accountId).orElseThrow( () -> new IllegalArgumentException("there is no Account by this id") );
+		
+		AccountFourKeysEntity account = modelMapper.map(accountEntity, AccountFourKeysEntity.class);
+		
+		account.setName(accountFourKeysDto.getName());
+		account.setAccessKey(accountFourKeysDto.getAccessKey());
+		account.setSecriteKey(accountFourKeysDto.getSecriteKey());
+		account.setSubscription(accountFourKeysDto.getSubscription());
+		account.setTenant(accountFourKeysDto.getTenant());
+		
+		AccountFourKeysEntity newAccount = (AccountFourKeysEntity) accountRepository.save(account);
+		
+		AccountFourKeysDto newAccountDto = modelMapper.map( newAccount , AccountFourKeysDto.class );
+		
+		return newAccountDto;
+	}
+
 
 	
 

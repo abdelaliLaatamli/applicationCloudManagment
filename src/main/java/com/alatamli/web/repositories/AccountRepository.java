@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.alatamli.web.entities.AccountEntity;
+import com.alatamli.web.entities.AccountOneKeyEntity;
+import com.alatamli.web.shared.dto.AccountOneKeyDto;
 
 public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 	
@@ -17,5 +19,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 				" u.is_active = 1" ,
 			nativeQuery = true)
 	List<AccountEntity> findByProviderAndUser( @Param("providerId") long providerId);
+
+	AccountOneKeyEntity save(AccountOneKeyDto account);
 
 }

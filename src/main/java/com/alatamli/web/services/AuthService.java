@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.SpringSecurityMessageSource;
+//import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -83,10 +83,10 @@ public class AuthService implements UserDetailsService {
 		
 		UserEntity userEntity =  userRepository.findByEmail(username);
 		
-		//if( userEntity == null ) throw new UsernameNotFoundException("User not Exist : " + username);
+		if( userEntity == null ) throw new UsernameNotFoundException("User not Exist : " + username);
 		
 		
-		if( userEntity == null )  throw new UsernameNotFoundException(SpringSecurityMessageSource.getAccessor().getMessage("AbstractUserDetailsAuthenticationProvider.UserUnknown",new Object[] {username},"User is not known"));
+		//if( userEntity == null )  throw new UsernameNotFoundException(SpringSecurityMessageSource.getAccessor().getMessage("AbstractUserDetailsAuthenticationProvider.UserUnknown",new Object[] {username},"User is not known"));
 
 		
 		return new User(userEntity.getEmail() , userEntity.getPassword() , new ArrayList<>()) ;

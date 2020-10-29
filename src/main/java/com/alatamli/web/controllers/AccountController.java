@@ -9,9 +9,11 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,12 +47,11 @@ public class AccountController {
 	ModelMapper modelMapper;
 	
 	
-	@GetMapping(path = "/{providerId}")
-	public ResponseEntity< List<AccountResponse> > getAccounts( @PathVariable long providerId , Principal principal ) {
+	@GetMapping(path = "provider/{providerId}")
+	public ResponseEntity< List<AccountResponse> > getAccountsByProvider( @PathVariable long providerId , Principal principal ) {
 		
 	
 		List<AccountResponse> accountsResponse = null;
-		//List<AccountDto> accounts = null ;
 		Type listType  = null ;
 		
 		
@@ -91,35 +92,89 @@ public class AccountController {
 		AccountDto newAccount = null ;
 		
 		switch (accountRequest.getAccountType()) {
-		case ONEKEY : 
+			case ONEKEY : 
+				
+				AccountOneKeyDto accountOneKeyDto = modelMapper.map(accountRequest, AccountOneKeyDto.class);
+				newAccount = accountService.addOneKeyAccount( accountOneKeyDto , providerId , principal.getName());
+				accountResponse = modelMapper.map(newAccount, AccountResponseOneKey.class);
+				
+				break;
 			
-			AccountOneKeyDto accountOneKeyDto = modelMapper.map(accountRequest, AccountOneKeyDto.class);
-			newAccount = accountService.addOneKeyAccount( accountOneKeyDto , providerId , principal.getName());
-			accountResponse = modelMapper.map(newAccount, AccountResponseOneKey.class);
-			
-			break;
-		
-		case TWOKEYS:
-			
-			AccountTwoKeysDto accountTwoKeysDto = modelMapper.map(accountRequest, AccountTwoKeysDto.class);
-			newAccount = accountService.addTwoKeysAccount( accountTwoKeysDto , providerId , principal.getName());
-			accountResponse = modelMapper.map(newAccount, AccountResponseTwoKeysDetails.class);
-			
-			break;
-			
-		case FOURKEYS :
-			
-			AccountFourKeysDto accountFourKeysDto = modelMapper.map( accountRequest , AccountFourKeysDto.class);
-			newAccount = accountService.addFourKeysAccount( accountFourKeysDto , providerId , principal.getName());
-			accountResponse = modelMapper.map(newAccount, AccountResponseTwoKeysDetails.class);
-			
-			break;
-
-		default: throw new RuntimeException("this type is not Integrated"); 
+			case TWOKEYS:
+				
+				AccountTwoKeysDto accountTwoKeysDto = modelMapper.map(accountRequest, AccountTwoKeysDto.class);
+				newAccount = accountService.addTwoKeysAccount( accountTwoKeysDto , providerId , principal.getName());
+				accountResponse = modelMapper.map(newAccount, AccountResponseTwoKeysDetails.class);
+				
+				break;
+				
+			case FOURKEYS :
+				
+				AccountFourKeysDto accountFourKeysDto = modelMapper.map( accountRequest , AccountFourKeysDto.class);
+				newAccount = accountService.addFourKeysAccount( accountFourKeysDto , providerId , principal.getName());
+				accountResponse = modelMapper.map(newAccount, AccountResponseTwoKeysDetails.class);
+				
+				break;
+	
+			default: throw new RuntimeException("this type is not Integrated"); 
 		}
 		
 		
 		return new ResponseEntity<AccountResponse> ( accountResponse , HttpStatus.CREATED );
 	}
+	
+	
+	@PutMapping(path = "/{accountId}")
+	public ResponseEntity<AccountResponse> editAccount( @PathVariable long accountId , @RequestBody AccountRequest accountRequest , Principal principal ){
+		
+		AccountResponse accountResponse = null ; 
+		AccountDto newAccount = null ;
+		
+		switch (accountRequest.getAccountType()) {
+			case ONEKEY : 
+				
+				AccountOneKeyDto accountOneKeyDto = modelMapper.map(accountRequest, AccountOneKeyDto.class);
+				newAccount = accountService.editOneKeyAccount( accountId , accountOneKeyDto , principal.getName());
+				accountResponse = modelMapper.map(newAccount, AccountResponseOneKey.class);
+				
+				break;
+			
+			case TWOKEYS:
+				
+				AccountTwoKeysDto accountTwoKeysDto = modelMapper.map(accountRequest, AccountTwoKeysDto.class);
+				newAccount = accountService.editTwoKeysAccount( accountId , accountTwoKeysDto , principal.getName());
+				accountResponse = modelMapper.map(newAccount, AccountResponseTwoKeysDetails.class);
+				
+				break;
+				
+			case FOURKEYS :
+				
+				AccountFourKeysDto accountFourKeysDto = modelMapper.map( accountRequest , AccountFourKeysDto.class);
+				newAccount = accountService.editFourKeysAccount( accountId , accountFourKeysDto , principal.getName());
+				accountResponse = modelMapper.map(newAccount, AccountResponseTwoKeysDetails.class);
+				
+				break;
+	
+			default: throw new RuntimeException("this type is not Integrated"); 
+		}
+		
+		
+		return new ResponseEntity<AccountResponse> ( accountResponse , HttpStatus.ACCEPTED );
+		
+	}
+	
+	
+	
+	@DeleteMapping(path = "/{accountId}")
+	public ResponseEntity<Object> deleteAccount(@PathVariable long accountId , Principal principal){
+		
+		
+		accountService.deactivateAccount( accountId , principal.getName());
+		
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+	
+	
+	
 	
 }

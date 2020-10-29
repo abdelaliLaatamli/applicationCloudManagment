@@ -25,7 +25,7 @@ import javax.persistence.OneToOne;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn( name="TYPE_ACC" , discriminatorType = DiscriminatorType.STRING , length = 3 )
 
-public abstract class AccountEntity {
+public class AccountEntity {
 
 	@Id
 	@GeneratedValue
