@@ -1,5 +1,6 @@
 package com.alatamli.web.entities;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -44,6 +45,15 @@ public class InstanceEntity {
 	
 	@Column
 	private boolean isInstalled=false;
+	
+	@Column
+	private boolean isDeleted=false;
+	
+	@Column(nullable = true)
+	private Instant createdAt = Instant.now();
+	
+	@Column(nullable = true)
+	private Instant deletedAt;
 	
 	@Enumerated(EnumType.ORDINAL)
 	private IpStatus ipStatus;
@@ -157,6 +167,36 @@ public class InstanceEntity {
 
 	public void setCrons(List<CronEntity> crons) {
 		this.crons = crons;
+	}
+
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+
+	public Instant getCreatedAt() {
+		return createdAt;
+	}
+
+
+	public void setCreatedAt(Instant createdAt) {
+		this.createdAt = createdAt;
+	}
+
+
+	public Instant getDeletedAt() {
+		return deletedAt;
+	}
+
+
+	public void setDeletedAt(Instant deletedAt) {
+		this.deletedAt = deletedAt;
 	}
 
 	
