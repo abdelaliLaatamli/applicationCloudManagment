@@ -76,7 +76,44 @@ public class InstancesService {
 		InstanceEntity instanceEntity = instanceRepository.findByInstanceId( instanceId );
 		
 		InstanceDto newInstance;
+		InstanceEntity newInstanceEntity;
 		
+		if( instanceEntity == null ) {
+			
+			instanceEntity = new InstanceOtherEntity();
+			instanceEntity.setInstanceId(instanceId);
+			instanceEntity.setName(instance.getName());
+			instanceEntity.setMainIp(instance.getMainIp());
+			instanceEntity.setVmtaDomain(instance.getVmtaDomain());
+			
+		}
+		
+		switch (type) {
+		
+			case "vmta":
+				
+				instanceEntity.setVmtaDomain(instance.getVmtaDomain());
+				newInstanceEntity = instanceRepository.save(instanceEntity);
+				
+				break;
+				
+			case "install":
+				
+				instanceEntity.setInstalled(true);
+				newInstanceEntity = instanceRepository.save(instanceEntity);
+				
+				break;
+				
+			default:
+				
+				newInstanceEntity = instanceRepository.save(instanceEntity);
+				
+				break;
+				
+		}
+		
+		
+		/*
 		if( instanceEntity != null ) {
 			
 			instanceEntity.setVmtaDomain(instance.getVmtaDomain());
@@ -94,9 +131,12 @@ public class InstancesService {
 			newInstance = modelMapper.map(newInstanceEntity, InstanceDto.class);
 			
 		}
+		*/
 		
+		newInstance = modelMapper.map(newInstanceEntity, InstanceDto.class);
 		
 		return newInstance;
+		
 	}
 
 	public List<DropletInstance> addInstance(long accountId, AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
