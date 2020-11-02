@@ -63,10 +63,6 @@ public class InstanceEntity {
 	private AccountEntity account;
 	
 	
-	@OneToMany(cascade = CascadeType.ALL , mappedBy = "instance")
-	private List<VcnEntity> vcns;
-	
-	
 	@OneToMany( cascade = CascadeType.ALL , mappedBy = "instance" )
 	private List<CronEntity> crons ;
 	
@@ -147,16 +143,6 @@ public class InstanceEntity {
 
 	public void setAccount(AccountEntity account) {
 		this.account = account;
-	}
-
-
-	public List<VcnEntity> getVcns() {
-		return vcns;
-	}
-
-
-	public void setVcns(List<VcnEntity> vcns) {
-		this.vcns = vcns;
 	}
 
 

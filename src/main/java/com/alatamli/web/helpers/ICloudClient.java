@@ -8,5 +8,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 public interface ICloudClient {
 	
 	HttpResponse<JsonNode> getInstancesHttp() throws UnirestException; 
+	HttpResponse<JsonNode> addInstancesHttp(String request) throws UnirestException;
+	HttpResponse<JsonNode> deleteInstancesHttp(String instanceId) throws UnirestException;
 
 }

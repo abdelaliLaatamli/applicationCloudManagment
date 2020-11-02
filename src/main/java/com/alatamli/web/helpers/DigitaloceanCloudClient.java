@@ -1,10 +1,15 @@
 package com.alatamli.web.helpers;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.alatamli.web.helpers.requests.digitalocean.AddInstanceRequestHttp;
 import com.alatamli.web.helpers.responses.DropletInstance;
 import com.alatamli.web.helpers.responses.DropletsListResponse;
+import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,12 +40,6 @@ public class DigitaloceanCloudClient implements ICloudClient {
 
 		
 		return dropletes.getDroplets();
-		//return retryHeader;
-		
-		//String retryHeader = response.getBody().toString();//.getHeaders().getFirst("Retry-After");
-		//String retryHeader = response.getBody().toString();
-				
-		//return retryHeader;
 	
 	}
 
@@ -48,27 +47,97 @@ public class DigitaloceanCloudClient implements ICloudClient {
 	public HttpResponse<JsonNode> getInstancesHttp() throws UnirestException {
 		String url = "https://api.digitalocean.com/v2/droplets" ;
 		HttpResponse<JsonNode> response = Unirest.get(url)
-				// .header("Authorization", "Bearer 19e2d322a12eb2722d8ba392edcb767a455160e2ca96307683581b4e2857add0")
 				.header("Authorization", "Bearer "+this.account.getToken())
 				.header("Content-Type", "application/json")
 				.asJson();
 		
 		return response;
 	}
-	
-	/*
-	private JsonNode fetchJson(HttpResponse<JsonNode> response) throws UnirestException, InterruptedException {
-		
-	
-		String retryHeader = response.getHeaders().getFirst("Retry-After");
 
-		if (response.getStatus() == 200) {
-			return response.getBody();
+	public List<DropletInstance> AddInstances(AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+
+		List<String> names = this.generateName(instanceRequest.getName() , instanceRequest.getNumberInstances() );
+	
+		
+		AddInstanceRequestHttp instanceRequestHttp = new AddInstanceRequestHttp();
+		
+		instanceRequestHttp.setNames(names);
+		instanceRequestHttp.setRegion(instanceRequest.getRegion());
+		
+		
+		String instanceRequestJson = mapper.writeValueAsString(instanceRequestHttp);
+		
+		HttpResponse<JsonNode> response = this.addInstancesHttp(instanceRequestJson);
+		
+		if( response.getStatus() < 300 ) {
+			DropletsListResponse dropletes = mapper.readValue( response.getBody().toString() , new TypeReference<DropletsListResponse>() {});
+			return dropletes.getDroplets(); 
 		}else {
-			throw new IllegalArgumentException("No data get ");
+			throw new RuntimeException( response.getBody().toString());
 		}
+		
 	}
-	*/
+	
+
+
+	@Override
+	public HttpResponse<JsonNode> addInstancesHttp( String request ) throws UnirestException {
+		
+		HttpResponse<JsonNode> response = Unirest.post("https://api.digitalocean.com/v2/droplets")
+			      .header("Authorization", "Bearer "+this.account.getToken())
+			      .header("Content-Type", "application/json")
+		          .body( request )
+		          .asJson();
+			
+				 
+		return response;
+		
+	}
+	
+	private List<String> generateName( String name , int numberInstances){
+		
+		List<String> names = new ArrayList<>();
+
+		Pattern pattern = Pattern.compile("([a-z0-9]{3})([0-9]{3})");
+	    Matcher matcher = pattern.matcher(name);
+
+		while (matcher.find()) {
+
+			if(  matcher.groupCount() == 2 ) {
+				int firstNumber=Integer.parseInt( matcher.group(2) );
+				for( int i = firstNumber ; i < firstNumber + numberInstances ; i++ ) 
+					names.add( matcher.group(1) + i  );
+			}
+			
+		}
+		
+		return names ;
+
+	}
+
+	public void deleteInstance(String instanceId) throws UnirestException {
+
+		HttpResponse<JsonNode> response = this.deleteInstancesHttp(instanceId);
+		
+		if( response.getStatus() > 300 ) 
+			throw new RuntimeException( response.getBody().toString());
+		
+	}
+
+	@Override
+	public HttpResponse<JsonNode> deleteInstancesHttp(String instanceId) throws UnirestException {
+	
+		HttpResponse<JsonNode> response = Unirest.delete( "https://api.digitalocean.com/v2/droplets/"+instanceId )
+				.header("Authorization", "Bearer "+this.account.getToken())
+				.header("Content-Type", "application/json")
+				.asJson();
+		
+		return response;
+	}
+
+	
 	
 
 	
