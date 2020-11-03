@@ -98,7 +98,6 @@ public class InstancesService {
 				break;
 				
 			case "install":
-				
 				instanceEntity.setInstalled(true);
 				newInstanceEntity = instanceRepository.save(instanceEntity);
 				
@@ -190,6 +189,19 @@ public class InstancesService {
 			
 		}
 			
+	}
+
+	public void updateOptions(long accountId, String instanceId, String option) throws UnirestException {
+		
+		AccountOneKeyEntity account = (AccountOneKeyEntity) accountRepository.findById(accountId)
+				.orElseThrow( () -> new IllegalArgumentException("there is no Account by this id " + accountId)  ); 
+
+		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
+		
+		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto);
+		
+		digitalClient.updateOption( instanceId , option );
+		
 	}
 	
 	

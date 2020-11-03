@@ -49,6 +49,7 @@ public class InstanceEntity {
 	@Column
 	private boolean isDeleted=false;
 	
+	
 	@Column(nullable = true)
 	private Instant createdAt = Instant.now();
 	

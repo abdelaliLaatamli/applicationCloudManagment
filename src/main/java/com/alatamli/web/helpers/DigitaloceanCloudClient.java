@@ -1,6 +1,7 @@
 package com.alatamli.web.helpers;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -91,7 +92,6 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		          .body( request )
 		          .asJson();
 			
-				 
 		return response;
 		
 	}
@@ -108,11 +108,11 @@ public class DigitaloceanCloudClient implements ICloudClient {
 			if(  matcher.groupCount() == 2 ) {
 				int firstNumber=Integer.parseInt( matcher.group(2) );
 				for( int i = firstNumber ; i < firstNumber + numberInstances ; i++ ) 
-					names.add( matcher.group(1) + i  );
+					names.add( matcher.group(1) + (new DecimalFormat("000")).format(i) );
 			}
 			
 		}
-		
+		System.out.println( names );
 		return names ;
 
 	}
@@ -134,6 +134,45 @@ public class DigitaloceanCloudClient implements ICloudClient {
 				.header("Content-Type", "application/json")
 				.asJson();
 		
+		return response;
+	}
+
+	public void updateOption(String instanceId, String option) throws UnirestException {
+		
+		HttpResponse<JsonNode> response ; 
+		
+		switch(option) {
+		
+			case "stop" : 
+					response = this.updateOptionsHttp("{\"type\":\"shutdown\"}" , instanceId );
+				break;
+				
+			case "start" :  
+					response = this.updateOptionsHttp("{\"type\":\"power_on\"}" , instanceId );
+				break ;
+				
+			default :
+				throw new RuntimeException( option + " option is not sepported " );
+		
+		}
+		
+		 
+		
+		if( response.getStatus() > 300 ) 
+			throw new RuntimeException( response.getBody().toString());
+		
+	}
+
+	@Override
+	public HttpResponse<JsonNode> updateOptionsHttp(String request , String instanceId ) throws UnirestException {
+		
+		HttpResponse<JsonNode> response = Unirest.post( "https://api.digitalocean.com/v2/droplets/"+instanceId+"/actions" 
+ )
+			      .header("Authorization", "Bearer "+this.account.getToken())
+			      .header("Content-Type", "application/json")
+		          .body( request )
+		          .asJson();
+			
 		return response;
 	}
 

@@ -44,7 +44,7 @@ public class InstanceController {
 	}
 	
 	@PutMapping("/update/{type}/{instanceId}")
-	public ResponseEntity<InstanceDto> updateInstanc( @PathVariable String type , @PathVariable String instanceId , @RequestBody InstanceRequest instanceRequest ){
+	public ResponseEntity<InstanceDto> updateInstance( @PathVariable String type , @PathVariable String instanceId , @RequestBody InstanceRequest instanceRequest ){
 		
 		InstanceDto instance = modelMapper.map( instanceRequest , InstanceDto.class);
 		
@@ -53,6 +53,16 @@ public class InstanceController {
 		
 		return new ResponseEntity<InstanceDto>( newinstance , HttpStatus.ACCEPTED  );
 	}
+	
+	
+	@PutMapping("/options/{accountId}/{instanceId}/{option}")
+	public ResponseEntity<Object> updateOptions( @PathVariable long accountId , @PathVariable String instanceId , @PathVariable String  option ) throws UnirestException{
+		
+		instancesService.updateOptions(accountId , instanceId , option);
+		
+		return new ResponseEntity<>( HttpStatus.ACCEPTED );
+	}
+	
 	
 	@PostMapping("/{accountId}")
 	public ResponseEntity<List<DropletInstance>> addInstance( @PathVariable long accountId , @RequestBody AddInstanceRequest instanceRequest ) throws JsonProcessingException, UnirestException{
