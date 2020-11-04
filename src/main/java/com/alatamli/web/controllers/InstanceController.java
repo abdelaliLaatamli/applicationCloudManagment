@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alatamli.web.helpers.responses.InstanceResponse;
-import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.requests.InstanceRequest;
 import com.alatamli.web.services.InstancesService;

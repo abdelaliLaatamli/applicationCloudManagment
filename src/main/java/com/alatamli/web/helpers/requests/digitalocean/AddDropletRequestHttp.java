@@ -2,7 +2,7 @@ package com.alatamli.web.helpers.requests.digitalocean;
 
 import java.util.List;
 
-public class AddInstanceRequestHttp {
+public class AddDropletRequestHttp {
 	
 
 	private List<String> names ;

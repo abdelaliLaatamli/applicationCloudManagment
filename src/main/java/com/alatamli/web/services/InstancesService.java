@@ -13,7 +13,6 @@ import com.alatamli.web.helpers.DigitaloceanCloudClient;
 import com.alatamli.web.helpers.ICloudClient;
 import com.alatamli.web.helpers.VultrCloudClient;
 import com.alatamli.web.helpers.responses.InstanceResponse;
-import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
@@ -124,6 +123,28 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
+		ICloudClient cloudClient ;
+		
+		
+		switch (accountDto.getProvider().getName()) {
+		
+			case "digitalocean":
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				break;
+			
+			case "vultr" :
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				break;
+
+			default:
+				throw new RuntimeException("This Provider not yet Supported");
+		}
+		
+		
+		List<InstanceResponse> listInstances = cloudClient.AddInstances(instanceRequest);
+		
+		
+		/*
 		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
 		
 		List<InstanceResponse> listInstances  = digitalClient.AddInstances( instanceRequest );
@@ -143,6 +164,8 @@ public class InstancesService {
 			instances.setDatabase(newInstanceEntity);
 			
 		}
+		
+		*/
 		
 		return listInstances;
 		

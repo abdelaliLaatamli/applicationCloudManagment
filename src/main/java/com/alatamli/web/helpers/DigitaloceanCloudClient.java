@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
-import com.alatamli.web.helpers.requests.digitalocean.AddInstanceRequestHttp;
+import com.alatamli.web.helpers.requests.digitalocean.AddDropletRequestHttp;
 import com.alatamli.web.helpers.responses.InstanceResponse;
 import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.helpers.responses.digitalocean.DropletsListResponse;
@@ -75,34 +75,6 @@ public class DigitaloceanCloudClient implements ICloudClient {
 			instancesResponse.add(instances);
 			
 		}
-			
-			
-		
-			
-	/*
-	for (InstanceResponse instancesRes : listInstances) {
-			
-			DropletInstance instances = (DropletInstance) instancesRes ;
-			
-			InstanceEntity instanceEntity = instanceRepository.findByInstanceId(instances.getId()+"");
-			
-			if( instanceEntity != null ) {
-				
-				instances.setDatabase(instanceEntity);
-				
-			}else {
-				instanceEntity = new InstanceOtherEntity();
-				instanceEntity.setInstanceId(instances.getId()+"");
-				instanceEntity.setName(instances.getName());
-				instanceEntity.setMainIp(instances.getNetworks().getV4().get(1).getIp_address());
-				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-				instances.setDatabase(newInstanceEntity);
-			}
-			
-		}
-		*/
-		//return listInstances;
-		
 		
 		
 		return instancesResponse;
@@ -122,6 +94,34 @@ public class DigitaloceanCloudClient implements ICloudClient {
 
 	public List<InstanceResponse> AddInstances(AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
 		
+		ObjectMapper mapper = new ObjectMapper();
+		List<String> names  = this.generateName( instanceRequest.getName() , instanceRequest.getNumberInstances() );
+		
+		AddDropletRequestHttp instanceRequestHttp = new AddDropletRequestHttp();
+		
+		
+		instanceRequestHttp.setNames(names);
+		instanceRequestHttp.setRegion(instanceRequest.getRegion());
+		
+		
+		String instanceRequestJson = mapper.writeValueAsString(instanceRequestHttp);
+		
+		HttpResponse<JsonNode> response = this.addInstancesHttp(instanceRequestJson);
+		
+		if( response.getStatus() < 300 ) {
+			
+			DropletsListResponse dropletes = mapper.readValue( response.getBody().toString() , new TypeReference<DropletsListResponse>() {});
+			List<InstanceResponse> instancesResponse = new ArrayList<>();
+			
+			for (InstanceResponse instancesRes : dropletes.getDroplets()) 
+				instancesResponse.add(instancesRes);
+			return instancesResponse;
+			
+		}else {
+			throw new RuntimeException( response.getBody().toString());
+		}
+		
+		/*
 		ObjectMapper mapper = new ObjectMapper();
 
 		List<String> names = this.generateName(instanceRequest.getName() , instanceRequest.getNumberInstances() );
@@ -149,6 +149,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		}else {
 			throw new RuntimeException( response.getBody().toString());
 		}
+		*/
 		
 	}
 	
