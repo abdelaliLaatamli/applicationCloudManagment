@@ -1,6 +1,8 @@
-package com.alatamli.web.helpers.responses;
+package com.alatamli.web.helpers.responses.digitalocean;
 
 import java.util.List;
+
+import com.alatamli.web.helpers.responses.InstanceResponse;
 
 public class DropletsListResponse {
 

@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.alatamli.web.entities.InstanceEntity;
+import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.requests.digitalocean.AddInstanceRequestHttp;
-import com.alatamli.web.helpers.responses.DropletInstance;
-import com.alatamli.web.helpers.responses.DropletsListResponse;
+import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
+import com.alatamli.web.helpers.responses.digitalocean.DropletsListResponse;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +33,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		this.account = account ;
 	}
 	
-	public List<DropletInstance>  getInstances() throws UnirestException, JsonMappingException, JsonProcessingException {
+	public List<InstanceResponse>  getInstances() throws UnirestException, JsonMappingException, JsonProcessingException {
 		
 
 		HttpResponse<JsonNode> response = this.getInstancesHttp();
@@ -38,9 +41,16 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		DropletsListResponse dropletes = mapper.readValue(retryHeader, new TypeReference<DropletsListResponse>() {});
-
 		
-		return dropletes.getDroplets();
+		
+		List<InstanceResponse> instancesResponse = new ArrayList<>();
+		
+		for (InstanceResponse instancesRes : dropletes.getDroplets()) 
+			instancesResponse.add(instancesRes);
+		
+		
+		
+		return instancesResponse;
 	
 	}
 
@@ -55,7 +65,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		return response;
 	}
 
-	public List<DropletInstance> AddInstances(AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
+	public List<InstanceResponse> AddInstances(AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
 		
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -73,8 +83,14 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		HttpResponse<JsonNode> response = this.addInstancesHttp(instanceRequestJson);
 		
 		if( response.getStatus() < 300 ) {
+			
 			DropletsListResponse dropletes = mapper.readValue( response.getBody().toString() , new TypeReference<DropletsListResponse>() {});
-			return dropletes.getDroplets(); 
+			List<InstanceResponse> instancesResponse = new ArrayList<>();
+			
+			for (InstanceResponse instancesRes : dropletes.getDroplets()) 
+				instancesResponse.add(instancesRes);
+			return instancesResponse;
+			
 		}else {
 			throw new RuntimeException( response.getBody().toString());
 		}

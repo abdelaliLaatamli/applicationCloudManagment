@@ -1,10 +1,10 @@
-package com.alatamli.web.helpers.responses;
+package com.alatamli.web.helpers.responses.digitalocean;
 
 import java.util.Date;
 
-import com.alatamli.web.helpers.responses.digitalocean.Networks;
+import com.alatamli.web.helpers.responses.InstanceResponse;
 
-public class DropletInstance  {
+public class DropletInstance extends InstanceResponse  {
 
 	private long id;
 	private String name;
@@ -27,8 +27,8 @@ public class DropletInstance  {
 	private Object region ;
 	private Object [] tags;
     private String vpc_uuid;
-    private Object database ;
-	
+ 
+	/*
     public Object getDatabase() {
 		return database;
 	}
@@ -37,7 +37,7 @@ public class DropletInstance  {
 	public void setDatabase(Object database) {
 		this.database = database;
 	}
-
+*/
 
 	public long getId() {
 		return id;

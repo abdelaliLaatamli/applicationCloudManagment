@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.alatamli.web.helpers.responses.DropletInstance;
+
+import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.requests.InstanceRequest;
 import com.alatamli.web.services.InstancesService;
@@ -34,12 +36,12 @@ public class InstanceController {
 	ModelMapper modelMapper;
 	
 	@GetMapping("/{accountId}")
-	public ResponseEntity<List<DropletInstance>>  getInstance( @PathVariable long accountId ) throws JsonMappingException, JsonProcessingException, UnirestException {
+	public ResponseEntity<List<InstanceResponse>>  getInstance( @PathVariable long accountId ) throws JsonMappingException, JsonProcessingException, UnirestException {
 		
 		
-		List<DropletInstance> instances = instancesService.getInstances( accountId );
+		List<InstanceResponse> instances = instancesService.getInstances( accountId );
 		
-		return new ResponseEntity<List<DropletInstance>>( instances , HttpStatus.OK ) ;
+		return new ResponseEntity<List<InstanceResponse>>( instances , HttpStatus.OK ) ;
 		
 	}
 	
@@ -65,11 +67,11 @@ public class InstanceController {
 	
 	
 	@PostMapping("/{accountId}")
-	public ResponseEntity<List<DropletInstance>> addInstance( @PathVariable long accountId , @RequestBody AddInstanceRequest instanceRequest ) throws JsonProcessingException, UnirestException{
+	public ResponseEntity<List<InstanceResponse>> addInstance( @PathVariable long accountId , @RequestBody AddInstanceRequest instanceRequest ) throws JsonProcessingException, UnirestException{
 		
-		List<DropletInstance> instance = instancesService.addInstance(accountId , instanceRequest);
+		List<InstanceResponse> instance = instancesService.addInstance(accountId , instanceRequest);
 	
-		return new ResponseEntity<List<DropletInstance>>( instance , HttpStatus.CREATED ) ;
+		return new ResponseEntity<List<InstanceResponse>>( instance , HttpStatus.CREATED ) ;
 	}
 	
 	

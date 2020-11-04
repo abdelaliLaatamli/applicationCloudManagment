@@ -10,7 +10,8 @@ import com.alatamli.web.entities.AccountOneKeyEntity;
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.DigitaloceanCloudClient;
-import com.alatamli.web.helpers.responses.DropletInstance;
+import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
@@ -33,7 +34,7 @@ public class InstancesService {
 	@Autowired
 	ModelMapper modelMapper;
 	
-	public List<DropletInstance> getInstances(long accountId) throws JsonMappingException, JsonProcessingException, UnirestException {
+	public List<InstanceResponse> getInstances(long accountId) throws JsonMappingException, JsonProcessingException, UnirestException {
 
 		AccountOneKeyEntity account = (AccountOneKeyEntity) accountRepository.findById(accountId)
 																				.orElseThrow( () -> new IllegalArgumentException("there is no Account by this id " + accountId)  ); 
@@ -42,9 +43,11 @@ public class InstancesService {
 		
 		DigitaloceanCloudClient digitalClient= new DigitaloceanCloudClient(accountDto);
 	
-		List<DropletInstance> listInstances = digitalClient.getInstances();
+		List<InstanceResponse> listInstances = digitalClient.getInstances();
 		
-		for (DropletInstance instances : listInstances) {
+		for (InstanceResponse instancesRes : listInstances) {
+			
+			DropletInstance instances = (DropletInstance) instancesRes ;
 			
 			InstanceEntity instanceEntity = instanceRepository.findByInstanceId(instances.getId()+"");
 			
@@ -63,12 +66,8 @@ public class InstancesService {
 			
 		}
 		
-		
-		
 		return listInstances;
 	
-			
-		
 	}
 
 	public InstanceDto updateInstance(String type, String instanceId, InstanceDto instance) {
@@ -112,33 +111,13 @@ public class InstancesService {
 		}
 		
 		
-		/*
-		if( instanceEntity != null ) {
-			
-			instanceEntity.setVmtaDomain(instance.getVmtaDomain());
-			InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-			newInstance = modelMapper.map(newInstanceEntity, InstanceDto.class);
-			
-		}else {
-			
-			instanceEntity = new InstanceOtherEntity();
-			instanceEntity.setInstanceId(instanceId);
-			instanceEntity.setName(instance.getName());
-			instanceEntity.setMainIp(instance.getMainIp());
-			instanceEntity.setVmtaDomain(instance.getVmtaDomain());
-			InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-			newInstance = modelMapper.map(newInstanceEntity, InstanceDto.class);
-			
-		}
-		*/
-		
 		newInstance = modelMapper.map(newInstanceEntity, InstanceDto.class);
 		
 		return newInstance;
 		
 	}
 
-	public List<DropletInstance> addInstance(long accountId, AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
+	public List<InstanceResponse> addInstance(long accountId, AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
 		
 		AccountOneKeyEntity account = (AccountOneKeyEntity) accountRepository.findById(accountId)
 				.orElseThrow( () -> new IllegalArgumentException("there is no Account by this id " + accountId)  ); 
@@ -147,10 +126,12 @@ public class InstancesService {
 		
 		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto);
 		
-		List<DropletInstance> listInstances  = digitalClient.AddInstances( instanceRequest );
+		List<InstanceResponse> listInstances  = digitalClient.AddInstances( instanceRequest );
 		
 		
-		for (DropletInstance instances : listInstances) {
+		for (InstanceResponse instancesRes : listInstances) {
+
+			DropletInstance instances = (DropletInstance ) instancesRes ;
 			
 			InstanceEntity instanceEntity  = new InstanceOtherEntity();
 			instanceEntity.setInstanceId(instances.getId()+"");
