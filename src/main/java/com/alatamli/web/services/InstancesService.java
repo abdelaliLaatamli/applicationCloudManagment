@@ -10,6 +10,8 @@ import com.alatamli.web.entities.AccountOneKeyEntity;
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.DigitaloceanCloudClient;
+import com.alatamli.web.helpers.ICloudClient;
+import com.alatamli.web.helpers.VultrCloudClient;
 import com.alatamli.web.helpers.responses.InstanceResponse;
 import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.repositories.AccountRepository;
@@ -41,30 +43,28 @@ public class InstancesService {
 		
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		DigitaloceanCloudClient digitalClient= new DigitaloceanCloudClient(accountDto);
+		//DigitaloceanCloudClient digitalClient= new DigitaloceanCloudClient(accountDto , instanceRepository );
 	
-		List<InstanceResponse> listInstances = digitalClient.getInstances();
+		// List<InstanceResponse> listInstances = digitalClient.getInstances();
 		
-		for (InstanceResponse instancesRes : listInstances) {
-			
-			DropletInstance instances = (DropletInstance) instancesRes ;
-			
-			InstanceEntity instanceEntity = instanceRepository.findByInstanceId(instances.getId()+"");
-			
-			if( instanceEntity != null ) {
+		ICloudClient cloudClient ;
+		
+		switch (accountDto.getProvider().getName()) {
+			case "digitalocean":
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				break;
 				
-				instances.setDatabase(instanceEntity);
-				
-			}else {
-				instanceEntity = new InstanceOtherEntity();
-				instanceEntity.setInstanceId(instances.getId()+"");
-				instanceEntity.setName(instances.getName());
-				instanceEntity.setMainIp(instances.getNetworks().getV4().get(1).getIp_address());
-				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-				instances.setDatabase(newInstanceEntity);
-			}
-			
+			case "vultr" :
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				break;
+	
+			default:
+				throw new RuntimeException("This Provider not yet Supported");
 		}
+		
+		
+		
+		List<InstanceResponse> listInstances = cloudClient.getInstances();
 		
 		return listInstances;
 	
@@ -124,7 +124,7 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto);
+		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
 		
 		List<InstanceResponse> listInstances  = digitalClient.AddInstances( instanceRequest );
 		
@@ -155,7 +155,7 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto);
+		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
 		
 		digitalClient.deleteInstance( instanceId );
 		
@@ -179,7 +179,7 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto);
+		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
 		
 		digitalClient.updateOption( instanceId , option );
 		

@@ -13,6 +13,7 @@ import com.alatamli.web.helpers.requests.digitalocean.AddInstanceRequestHttp;
 import com.alatamli.web.helpers.responses.InstanceResponse;
 import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.helpers.responses.digitalocean.DropletsListResponse;
+import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,19 +26,27 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class DigitaloceanCloudClient implements ICloudClient {
+	
+	InstanceRepository instanceRepository;
 
 	
 	public AccountOneKeyDto account ;
 	
-	public DigitaloceanCloudClient( AccountOneKeyDto account ) {
+	public DigitaloceanCloudClient( AccountOneKeyDto account , InstanceRepository instanceRepository ) {
 		this.account = account ;
+		this.instanceRepository = instanceRepository;
 	}
 	
 	public List<InstanceResponse>  getInstances() throws UnirestException, JsonMappingException, JsonProcessingException {
 		
 
 		HttpResponse<JsonNode> response = this.getInstancesHttp();
+		
 		String retryHeader = response.getBody().toString(); 
+		
+		if( response.getStatus() >= 300 )
+			throw new RuntimeException( response.getBody().toString());
+	
 		
 		ObjectMapper mapper = new ObjectMapper();
 		DropletsListResponse dropletes = mapper.readValue(retryHeader, new TypeReference<DropletsListResponse>() {});
@@ -45,8 +54,54 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		
 		List<InstanceResponse> instancesResponse = new ArrayList<>();
 		
-		for (InstanceResponse instancesRes : dropletes.getDroplets()) 
-			instancesResponse.add(instancesRes);
+		
+		for (DropletInstance instances : dropletes.getDroplets()) {
+			
+			InstanceEntity instanceEntity = instanceRepository.findByInstanceId( String.valueOf(instances.getId() ) );
+			
+			if( instanceEntity != null ) {
+				
+				instances.setDatabase(instanceEntity);
+				
+			}else {
+				instanceEntity = new InstanceOtherEntity();
+				instanceEntity.setInstanceId( String.valueOf( instances.getId() ) );
+				instanceEntity.setName(instances.getName());
+				instanceEntity.setMainIp(instances.getNetworks().getV4().get(1).getIp_address());
+				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
+				instances.setDatabase(newInstanceEntity);
+			}
+			
+			instancesResponse.add(instances);
+			
+		}
+			
+			
+		
+			
+	/*
+	for (InstanceResponse instancesRes : listInstances) {
+			
+			DropletInstance instances = (DropletInstance) instancesRes ;
+			
+			InstanceEntity instanceEntity = instanceRepository.findByInstanceId(instances.getId()+"");
+			
+			if( instanceEntity != null ) {
+				
+				instances.setDatabase(instanceEntity);
+				
+			}else {
+				instanceEntity = new InstanceOtherEntity();
+				instanceEntity.setInstanceId(instances.getId()+"");
+				instanceEntity.setName(instances.getName());
+				instanceEntity.setMainIp(instances.getNetworks().getV4().get(1).getIp_address());
+				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
+				instances.setDatabase(newInstanceEntity);
+			}
+			
+		}
+		*/
+		//return listInstances;
 		
 		
 		
@@ -54,8 +109,8 @@ public class DigitaloceanCloudClient implements ICloudClient {
 	
 	}
 
-	@Override
-	public HttpResponse<JsonNode> getInstancesHttp() throws UnirestException {
+	
+	private HttpResponse<JsonNode> getInstancesHttp() throws UnirestException {
 		String url = "https://api.digitalocean.com/v2/droplets" ;
 		HttpResponse<JsonNode> response = Unirest.get(url)
 				.header("Authorization", "Bearer "+this.account.getToken())
@@ -99,8 +154,8 @@ public class DigitaloceanCloudClient implements ICloudClient {
 	
 
 
-	@Override
-	public HttpResponse<JsonNode> addInstancesHttp( String request ) throws UnirestException {
+	
+	private HttpResponse<JsonNode> addInstancesHttp( String request ) throws UnirestException {
 		
 		HttpResponse<JsonNode> response = Unirest.post("https://api.digitalocean.com/v2/droplets")
 			      .header("Authorization", "Bearer "+this.account.getToken())
@@ -142,8 +197,8 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		
 	}
 
-	@Override
-	public HttpResponse<JsonNode> deleteInstancesHttp(String instanceId) throws UnirestException {
+	
+	private HttpResponse<JsonNode> deleteInstancesHttp(String instanceId) throws UnirestException {
 	
 		HttpResponse<JsonNode> response = Unirest.delete( "https://api.digitalocean.com/v2/droplets/"+instanceId )
 				.header("Authorization", "Bearer "+this.account.getToken())
@@ -179,8 +234,8 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		
 	}
 
-	@Override
-	public HttpResponse<JsonNode> updateOptionsHttp(String request , String instanceId ) throws UnirestException {
+	
+	private HttpResponse<JsonNode> updateOptionsHttp(String request , String instanceId ) throws UnirestException {
 		
 		HttpResponse<JsonNode> response = Unirest.post( "https://api.digitalocean.com/v2/droplets/"+instanceId+"/actions" 
  )
