@@ -30,6 +30,7 @@ public class InstanceVultr extends InstanceResponse {
     private int app_id;
     private String firewall_group_id;
     private Object [] features;
+    private String default_password;
     
     
 	public String getId() {
@@ -187,6 +188,12 @@ public class InstanceVultr extends InstanceResponse {
 	}
 	public void setFeatures(Object[] features) {
 		this.features = features;
+	}
+	public String getDefault_password() {
+		return default_password;
+	}
+	public void setDefault_password(String default_password) {
+		this.default_password = default_password;
 	}
 
 }

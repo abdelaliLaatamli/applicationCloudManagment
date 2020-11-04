@@ -1,4 +1,4 @@
-package com.alatamli.web.helpers.requests.digitalocean;
+package com.alatamli.web.helpers.requests;
 
 import java.util.List;
 

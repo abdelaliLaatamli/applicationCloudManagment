@@ -1,10 +1,10 @@
-package com.alatamli.web.helpers.requests.digitalocean;
+package com.alatamli.web.helpers.requests;
 
-public class addVultrRequestHttp {
+public class AddVultrRequestHttp {
 	
 	
 	private String region;
-	private int plan = 201; 
+	private String plan = "vc2-1c-1gb"; 
 	private String label;
 	private int os_id = 127;
 	private String backups = "disabled" ;
@@ -16,10 +16,10 @@ public class addVultrRequestHttp {
 	public void setRegion(String region) {
 		this.region = region;
 	}
-	public int getPlan() {
+	public String getPlan() {
 		return plan;
 	}
-	public void setPlan(int plan) {
+	public void setPlan(String plan) {
 		this.plan = plan;
 	}
 	public String getLabel() {

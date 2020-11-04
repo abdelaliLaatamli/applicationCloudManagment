@@ -144,29 +144,6 @@ public class InstancesService {
 		List<InstanceResponse> listInstances = cloudClient.AddInstances(instanceRequest);
 		
 		
-		/*
-		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
-		
-		List<InstanceResponse> listInstances  = digitalClient.AddInstances( instanceRequest );
-		
-		
-		for (InstanceResponse instancesRes : listInstances) {
-
-			DropletInstance instances = (DropletInstance ) instancesRes ;
-			
-			InstanceEntity instanceEntity  = new InstanceOtherEntity();
-			instanceEntity.setInstanceId(instances.getId()+"");
-			instanceEntity.setName(instances.getName());
-			if( instances.getNetworks().getV4().size() > 1 )
-			instanceEntity.setMainIp( instances.getNetworks().getV4().get(1).getIp_address() );
-			instanceEntity.setVmtaDomain(instanceRequest.getVmtaDomain());
-			InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-			instances.setDatabase(newInstanceEntity);
-			
-		}
-		
-		*/
-		
 		return listInstances;
 		
 	}
@@ -178,15 +155,34 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
+		//DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
 		
-		digitalClient.deleteInstance( instanceId );
+		//digitalClient.deleteInstance( instanceId );
+		
+		
+		ICloudClient cloudClient ;
+		
+		
+		switch (accountDto.getProvider().getName()) {
+		
+			case "digitalocean":
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				break;
+			
+			case "vultr" :
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				break;
+
+			default:
+				throw new RuntimeException("This Provider not yet Supported");
+		}
+		
+		cloudClient.deleteInstance( instanceId );
 		
 		InstanceEntity instanceEntity = instanceRepository.findByInstanceId(instanceId);
 		
 		if( instanceEntity != null ) {
 			
-			//instanceEntity = new InstanceOtherEntity();
 			instanceEntity.setDeleted(true);
 			instanceEntity.setDeletedAt(Instant.now());
 			instanceRepository.save(instanceEntity);
@@ -202,9 +198,28 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
+		//DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
 		
-		digitalClient.updateOption( instanceId , option );
+		//digitalClient.updateOption( instanceId , option );
+		
+		ICloudClient cloudClient ;
+		
+		
+		switch (accountDto.getProvider().getName()) {
+		
+			case "digitalocean":
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				break;
+			
+			case "vultr" :
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				break;
+
+			default:
+				throw new RuntimeException("This Provider not yet Supported");
+		}
+		
+		cloudClient.updateOption( instanceId , option );
 		
 	}
 	

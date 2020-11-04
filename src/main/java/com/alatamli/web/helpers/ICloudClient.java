@@ -19,4 +19,6 @@ public interface ICloudClient {
 	*/
 	List<InstanceResponse> getInstances() throws UnirestException, JsonMappingException, JsonProcessingException ;
 	List<InstanceResponse> AddInstances(AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException ;
+	void deleteInstance(String instanceId) throws UnirestException;
+	void updateOption(String instanceId, String option) throws UnirestException;
 }
