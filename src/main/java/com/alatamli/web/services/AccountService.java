@@ -251,6 +251,13 @@ public class AccountService {
 		return newAccountDto;
 	}
 
+	
+	public List<Object> getNumberAccountsByProvider(){
+		
+		List<Object> numbers = accountRepository.getNumberAccountsByProvider();
+		
+		return numbers;
+	}
 
 	
 

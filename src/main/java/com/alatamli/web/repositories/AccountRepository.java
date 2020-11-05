@@ -22,4 +22,11 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
 	AccountOneKeyEntity save(AccountOneKeyDto account);
 
+	
+	// @Query(value = "SELECT COUNT( i.id ) as data , i.created_at as dates FROM instances i GROUP BY DAY(i.created_at)" , nativeQuery = true)
+	@Query(value = "SELECT count(a.id) as number , p.name FROM accounts as a ,"
+					+ " providers as p WHERE p.id = provider_id "
+					+ "GROUP BY a.provider_id" , nativeQuery = true)
+	List<Object> getNumberAccountsByProvider();
+
 }

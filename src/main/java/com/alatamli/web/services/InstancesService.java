@@ -42,10 +42,6 @@ public class InstancesService {
 		
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		//DigitaloceanCloudClient digitalClient= new DigitaloceanCloudClient(accountDto , instanceRepository );
-	
-		// List<InstanceResponse> listInstances = digitalClient.getInstances();
-		
 		ICloudClient cloudClient ;
 		
 		switch (accountDto.getProvider().getName()) {
@@ -155,10 +151,6 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		//DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
-		
-		//digitalClient.deleteInstance( instanceId );
-		
 		
 		ICloudClient cloudClient ;
 		
@@ -198,10 +190,6 @@ public class InstancesService {
 
 		AccountOneKeyDto accountDto = modelMapper.map(account, AccountOneKeyDto.class);
 		
-		//DigitaloceanCloudClient digitalClient = new DigitaloceanCloudClient(accountDto , instanceRepository);
-		
-		//digitalClient.updateOption( instanceId , option );
-		
 		ICloudClient cloudClient ;
 		
 		
@@ -220,6 +208,15 @@ public class InstancesService {
 		}
 		
 		cloudClient.updateOption( instanceId , option );
+		
+	}
+	
+	
+	public List<Object> numberInstancesByDay() {
+		
+		List<Object> states = instanceRepository.getStatistiquesByDay();
+		
+		return states;
 		
 	}
 	
