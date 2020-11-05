@@ -259,6 +259,11 @@ public class AccountService {
 		return numbers;
 	}
 
+	public List<Object> getNumberInstanceByAccount() {
+		List<Object> instanceByAccount = accountRepository.getNumberInstanceByAccount();
+		return instanceByAccount;
+	}
+
 	
 
 

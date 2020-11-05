@@ -40,5 +40,13 @@ public class HomeController {
 		return new ResponseEntity<List<Object>>( numbers , HttpStatus.OK);
 	}
 	
+	@GetMapping("/instancesByAccount")
+	public ResponseEntity<List<Object>> getNumberInstanceByAccount( ){
+		
+		List<Object> instanceByAccount = accountService.getNumberInstanceByAccount();
+		
+		return new ResponseEntity<List<Object>>( instanceByAccount , HttpStatus.OK);
+	}
+	
 	
 }
