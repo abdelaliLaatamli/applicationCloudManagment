@@ -30,6 +30,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 	
 	@Query(value = "SELECT ( SELECT COUNT(i.id) from instances as i WHERE i.account_id = a.id) as cinstances , "
 					+ " a.name , p.name as provider_name "
+					+ " , ( SELECT MAX(i.created_at) from instances as i WHERE i.account_id = a.id) as lastDate "
 					+ " FROM `accounts` as a , providers as p WHERE p.id = a.provider_id"
 					+ " ORDER BY `cinstances` DESC limit 5" , nativeQuery = true)
 	List<Object> getNumberInstanceByAccount();
