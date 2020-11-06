@@ -2,9 +2,9 @@ package com.alatamli.web.helpers.responses.digitalocean;
 
 import java.util.Date;
 
-import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 
-public class DropletInstance extends InstanceResponse  {
+public class DropletInstance extends InstanceResponseHttp  {
 
 	private long id;
 	private String name;

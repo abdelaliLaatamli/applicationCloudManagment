@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.requests.InstanceRequest;
+import com.alatamli.web.responses.InstanceResponse;
 import com.alatamli.web.services.InstancesService;
 import com.alatamli.web.shared.dto.InstanceDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,24 +36,25 @@ public class InstanceController {
 	ModelMapper modelMapper;
 	
 	@GetMapping("/{accountId}")
-	public ResponseEntity<List<InstanceResponse>>  getInstance( @PathVariable long accountId ) throws JsonMappingException, JsonProcessingException, UnirestException {
+	public ResponseEntity<List<InstanceResponseHttp>>  getInstance( @PathVariable long accountId ) throws JsonMappingException, JsonProcessingException, UnirestException {
 		
 		
-		List<InstanceResponse> instances = instancesService.getInstances( accountId );
+		List<InstanceResponseHttp> instances = instancesService.getInstances( accountId );
 		
-		return new ResponseEntity<List<InstanceResponse>>( instances , HttpStatus.OK ) ;
+		return new ResponseEntity<List<InstanceResponseHttp>>( instances , HttpStatus.OK ) ;
 		
 	}
 	
 	@PutMapping("/update/{type}/{instanceId}")
-	public ResponseEntity<InstanceDto> updateInstance( @PathVariable String type , @PathVariable String instanceId , @RequestBody InstanceRequest instanceRequest ){
+	public ResponseEntity<InstanceResponse> updateInstance( @PathVariable String type , @PathVariable String instanceId , @RequestBody InstanceRequest instanceRequest ){
 		
 		InstanceDto instance = modelMapper.map( instanceRequest , InstanceDto.class);
 		
 		InstanceDto newinstance = instancesService.updateInstance( type , instanceId , instance );
 		
+		InstanceResponse instanceResponse = modelMapper.map(newinstance, InstanceResponse.class);
 		
-		return new ResponseEntity<InstanceDto>( newinstance , HttpStatus.ACCEPTED  );
+		return new ResponseEntity<InstanceResponse>( instanceResponse , HttpStatus.ACCEPTED  );
 	}
 	
 	
@@ -66,11 +68,11 @@ public class InstanceController {
 	
 	
 	@PostMapping("/{accountId}")
-	public ResponseEntity<List<InstanceResponse>> addInstance( @PathVariable long accountId , @RequestBody AddInstanceRequest instanceRequest ) throws JsonProcessingException, UnirestException{
+	public ResponseEntity<List<InstanceResponseHttp>> addInstance( @PathVariable long accountId , @RequestBody AddInstanceRequest instanceRequest ) throws JsonProcessingException, UnirestException{
 		
-		List<InstanceResponse> instance = instancesService.addInstance(accountId , instanceRequest);
+		List<InstanceResponseHttp> instance = instancesService.addInstance(accountId , instanceRequest);
 	
-		return new ResponseEntity<List<InstanceResponse>>( instance , HttpStatus.CREATED ) ;
+		return new ResponseEntity<List<InstanceResponseHttp>>( instance , HttpStatus.CREATED ) ;
 	}
 	
 	

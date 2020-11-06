@@ -12,7 +12,7 @@ import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.DigitaloceanCloudClient;
 import com.alatamli.web.helpers.ICloudClient;
 import com.alatamli.web.helpers.VultrCloudClient;
-import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
@@ -35,7 +35,7 @@ public class InstancesService {
 	@Autowired
 	ModelMapper modelMapper;
 	
-	public List<InstanceResponse> getInstances(long accountId) throws JsonMappingException, JsonProcessingException, UnirestException {
+	public List<InstanceResponseHttp> getInstances(long accountId) throws JsonMappingException, JsonProcessingException, UnirestException {
 
 		AccountOneKeyEntity account = (AccountOneKeyEntity) accountRepository.findById(accountId)
 																				.orElseThrow( () -> new IllegalArgumentException("there is no Account by this id " + accountId)  ); 
@@ -46,11 +46,11 @@ public class InstancesService {
 		
 		switch (accountDto.getProvider().getName()) {
 			case "digitalocean":
-				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository , accountRepository);
 				break;
 				
 			case "vultr" :
-				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository , accountRepository );
 				break;
 	
 			default:
@@ -59,7 +59,7 @@ public class InstancesService {
 		
 		
 		
-		List<InstanceResponse> listInstances = cloudClient.getInstances();
+		List<InstanceResponseHttp> listInstances = cloudClient.getInstances();
 		
 		return listInstances;
 	
@@ -112,7 +112,7 @@ public class InstancesService {
 		
 	}
 
-	public List<InstanceResponse> addInstance(long accountId, AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
+	public List<InstanceResponseHttp> addInstance(long accountId, AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
 		
 		AccountOneKeyEntity account = (AccountOneKeyEntity) accountRepository.findById(accountId)
 				.orElseThrow( () -> new IllegalArgumentException("there is no Account by this id " + accountId)  ); 
@@ -125,11 +125,11 @@ public class InstancesService {
 		switch (accountDto.getProvider().getName()) {
 		
 			case "digitalocean":
-				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository , accountRepository);
 				break;
 			
 			case "vultr" :
-				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository , accountRepository);
 				break;
 
 			default:
@@ -137,7 +137,7 @@ public class InstancesService {
 		}
 		
 		
-		List<InstanceResponse> listInstances = cloudClient.AddInstances(instanceRequest);
+		List<InstanceResponseHttp> listInstances = cloudClient.AddInstances(instanceRequest);
 		
 		
 		return listInstances;
@@ -158,11 +158,11 @@ public class InstancesService {
 		switch (accountDto.getProvider().getName()) {
 		
 			case "digitalocean":
-				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository , accountRepository );
 				break;
 			
 			case "vultr" :
-				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository , accountRepository );
 				break;
 
 			default:
@@ -196,11 +196,11 @@ public class InstancesService {
 		switch (accountDto.getProvider().getName()) {
 		
 			case "digitalocean":
-				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository );
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository , accountRepository );
 				break;
 			
 			case "vultr" :
-				cloudClient = new VultrCloudClient(accountDto , instanceRepository );
+				cloudClient = new VultrCloudClient(accountDto , instanceRepository , accountRepository );
 				break;
 
 			default:

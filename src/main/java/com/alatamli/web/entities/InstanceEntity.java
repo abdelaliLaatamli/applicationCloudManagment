@@ -26,7 +26,6 @@ import com.alatamli.web.enums.IpStatus;
 public class InstanceEntity {
 	
 
-
 	@Id
 	@GeneratedValue
 	private long id ;

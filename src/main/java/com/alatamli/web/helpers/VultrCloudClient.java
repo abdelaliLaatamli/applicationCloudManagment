@@ -7,15 +7,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.modelmapper.ModelMapper;
+
+import com.alatamli.web.entities.AccountEntity;
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.requests.AddVultrRequestHttp;
-import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 import com.alatamli.web.helpers.responses.vultr.CreateInstanceResponse;
 import com.alatamli.web.helpers.responses.vultr.InstanceVultr;
 import com.alatamli.web.helpers.responses.vultr.InstanceVultrList;
+import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
+import com.alatamli.web.responses.InstanceResponse;
 import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -31,19 +36,23 @@ import kong.unirest.UnirestException;
 
 
 public class VultrCloudClient implements ICloudClient {
-
-	InstanceRepository instanceRepository;
-	private
-	AccountOneKeyDto account ;
 	
-	public VultrCloudClient( AccountOneKeyDto account , InstanceRepository instanceRepository  ) {
+	
+	private AccountRepository accountRepository;
+	private InstanceRepository instanceRepository;
+	private AccountOneKeyDto account ;
+	private ModelMapper modelMapper;
+	
+	public VultrCloudClient( AccountOneKeyDto account , InstanceRepository instanceRepository , AccountRepository accountRepository ) {
 		this.account = account ;
 		this.instanceRepository = instanceRepository;
+		this.accountRepository = accountRepository;
+		this.modelMapper = new ModelMapper();
 	}
 	
 	
 	@Override
-	public List<InstanceResponse> getInstances()
+	public List<InstanceResponseHttp> getInstances()
 			throws UnirestException, JsonMappingException, JsonProcessingException {
 		
 		
@@ -58,23 +67,26 @@ public class VultrCloudClient implements ICloudClient {
 		ObjectMapper mapper = new ObjectMapper();
 		InstanceVultrList instanceList = mapper.readValue(bodyResponse, new TypeReference<InstanceVultrList>() {});
 		
-		List<InstanceResponse> instancesResponse = new ArrayList<>();
+		List<InstanceResponseHttp> instancesResponse = new ArrayList<>();
 		
 		for (InstanceVultr instances : instanceList.getInstances() ) {
 			
 			InstanceEntity instanceEntity = instanceRepository.findByInstanceId( String.valueOf(instances.getId() ) );
 			
 			if( instanceEntity != null ) {
-				
-				instances.setDatabase(instanceEntity);
+				InstanceResponse instanceResponse = this.modelMapper.map(instanceEntity, InstanceResponse.class ) ;
+				instances.setDatabase(instanceResponse);
 				
 			}else {
 				instanceEntity = new InstanceOtherEntity();
 				instanceEntity.setInstanceId( instances.getId() );
 				instanceEntity.setName(instances.getLabel());
 				instanceEntity.setMainIp(instances.getMain_ip());
+				AccountEntity accountEntity = accountRepository.findById( this.account.getId() ).orElse(null);
+				instanceEntity.setAccount(accountEntity);
 				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-				instances.setDatabase(newInstanceEntity);
+				InstanceResponse instanceResponse = this.modelMapper.map(newInstanceEntity, InstanceResponse.class ) ;
+				instances.setDatabase(instanceResponse);
 			}
 			
 			instancesResponse.add(instances);
@@ -105,7 +117,7 @@ public class VultrCloudClient implements ICloudClient {
 
 
 	@Override
-	public List<InstanceResponse> AddInstances ( AddInstanceRequest instanceRequest )
+	public List<InstanceResponseHttp> AddInstances ( AddInstanceRequest instanceRequest )
 			throws JsonProcessingException, UnirestException {
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -113,7 +125,7 @@ public class VultrCloudClient implements ICloudClient {
 		
 		List<String> names  = this.generateName( instanceRequest.getName() , instanceRequest.getNumberInstances() );
 		
-		List<InstanceResponse> instancesResponse = new ArrayList<>();
+		List<InstanceResponseHttp> instancesResponse = new ArrayList<>();
 		
 		for( String name : names ) {
 			
@@ -137,8 +149,11 @@ public class VultrCloudClient implements ICloudClient {
 				instanceEntity.setName(instanceVultr.getLabel());
 				instanceEntity.setMainIp( instanceVultr.getMain_ip() );
 				instanceEntity.setVmtaDomain(instanceRequest.getVmtaDomain());
+				AccountEntity accountEntity = accountRepository.findById( this.account.getId() ).orElse(null);
+				instanceEntity.setAccount(accountEntity);
 				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-				instanceVultr.setDatabase(newInstanceEntity);
+				InstanceResponse instanceResponse = this.modelMapper.map(newInstanceEntity, InstanceResponse.class ) ;
+				instanceVultr.setDatabase(instanceResponse);
 				
 				instancesResponse.add( instanceVultr );
 				

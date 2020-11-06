@@ -1,8 +1,8 @@
 package com.alatamli.web.helpers.responses.vultr;
 
-import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 
-public class InstanceVultr extends InstanceResponse {
+public class InstanceVultr extends InstanceResponseHttp {
 	
 	private String id ;
     private String os ;

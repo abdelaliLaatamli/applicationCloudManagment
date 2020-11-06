@@ -7,14 +7,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.modelmapper.ModelMapper;
+
+import com.alatamli.web.entities.AccountEntity;
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.requests.AddDropletRequestHttp;
-import com.alatamli.web.helpers.responses.InstanceResponse;
+import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.helpers.responses.digitalocean.DropletsListResponse;
+import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
+import com.alatamli.web.responses.InstanceResponse;
 import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,17 +32,21 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class DigitaloceanCloudClient implements ICloudClient {
 	
-	InstanceRepository instanceRepository;
 
+	private AccountRepository accountRepository;
+	private InstanceRepository instanceRepository;
+	private AccountOneKeyDto account ;
+	private ModelMapper modelMapper;
 	
-	public AccountOneKeyDto account ;
 	
-	public DigitaloceanCloudClient( AccountOneKeyDto account , InstanceRepository instanceRepository ) {
+	public DigitaloceanCloudClient( AccountOneKeyDto account , InstanceRepository instanceRepository , AccountRepository accountRepository) {
 		this.account = account ;
 		this.instanceRepository = instanceRepository;
+		this.accountRepository = accountRepository;
+		this.modelMapper = new ModelMapper();
 	}
 	
-	public List<InstanceResponse>  getInstances() throws UnirestException, JsonMappingException, JsonProcessingException {
+	public List<InstanceResponseHttp>  getInstances() throws UnirestException, JsonMappingException, JsonProcessingException {
 		
 
 		HttpResponse<JsonNode> response = this.getInstancesHttp();
@@ -52,7 +61,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		DropletsListResponse dropletes = mapper.readValue(retryHeader, new TypeReference<DropletsListResponse>() {});
 		
 		
-		List<InstanceResponse> instancesResponse = new ArrayList<>();
+		List<InstanceResponseHttp> instancesResponse = new ArrayList<>();
 		
 		
 		for (DropletInstance instances : dropletes.getDroplets()) {
@@ -61,15 +70,27 @@ public class DigitaloceanCloudClient implements ICloudClient {
 			
 			if( instanceEntity != null ) {
 				
-				instances.setDatabase(instanceEntity);
+				if( instanceEntity.getAccount() == null ) {
+					
+					AccountEntity accountEntity = accountRepository.findById( this.account.getId() ).orElse(null);
+					instanceEntity.setAccount(accountEntity);
+					InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
+					instanceEntity = newInstanceEntity;
+				}
+				
+				InstanceResponse instanceResponse = this.modelMapper.map(instanceEntity, InstanceResponse.class ) ;
+				instances.setDatabase(instanceResponse);
 				
 			}else {
 				instanceEntity = new InstanceOtherEntity();
 				instanceEntity.setInstanceId( String.valueOf( instances.getId() ) );
 				instanceEntity.setName(instances.getName());
 				instanceEntity.setMainIp(instances.getNetworks().getV4().get(1).getIp_address());
+				AccountEntity accountEntity = accountRepository.findById( this.account.getId() ).orElse(null);
+				instanceEntity.setAccount(accountEntity);
 				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-				instances.setDatabase(newInstanceEntity);
+				InstanceResponse instanceResponse = this.modelMapper.map(newInstanceEntity, InstanceResponse.class ) ;
+				instances.setDatabase(instanceResponse);
 			}
 			
 			instancesResponse.add(instances);
@@ -92,7 +113,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		return response;
 	}
 
-	public List<InstanceResponse> AddInstances(AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
+	public List<InstanceResponseHttp> AddInstances(AddInstanceRequest instanceRequest) throws JsonProcessingException, UnirestException {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		List<String> names  = this.generateName( instanceRequest.getName() , instanceRequest.getNumberInstances() );
@@ -111,9 +132,9 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		if( response.getStatus() < 300 ) {
 			
 			DropletsListResponse dropletes = mapper.readValue( response.getBody().toString() , new TypeReference<DropletsListResponse>() {});
-			List<InstanceResponse> instancesResponse = new ArrayList<>();
+			List<InstanceResponseHttp> instancesResponse = new ArrayList<>();
 			
-			for (InstanceResponse instancesRes : dropletes.getDroplets()) {
+			for (InstanceResponseHttp instancesRes : dropletes.getDroplets()) {
 				
 				DropletInstance instances = (DropletInstance ) instancesRes ;
 				
@@ -123,8 +144,11 @@ public class DigitaloceanCloudClient implements ICloudClient {
 				if( instances.getNetworks().getV4().size() > 1 )
 				instanceEntity.setMainIp( instances.getNetworks().getV4().get(1).getIp_address() );
 				instanceEntity.setVmtaDomain(instanceRequest.getVmtaDomain());
+				AccountEntity accountEntity = accountRepository.findById( this.account.getId() ).orElse(null);
+				instanceEntity.setAccount(accountEntity);
 				InstanceEntity newInstanceEntity = instanceRepository.save(instanceEntity);
-				instancesRes.setDatabase(newInstanceEntity);
+				InstanceResponse instanceResponse = this.modelMapper.map(newInstanceEntity, InstanceResponse.class ) ;
+				instancesRes.setDatabase(instanceResponse);
 				
 				instancesResponse.add(instancesRes);	
 				
