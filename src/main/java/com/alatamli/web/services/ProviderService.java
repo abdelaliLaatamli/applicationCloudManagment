@@ -114,6 +114,19 @@ public class ProviderService {
 		return providerDto;
 	}
 
+	public Object getNumberProviderOfMonth() {
+		Object providerOfMonth =  providerRepository.getNumberProviderOfMonth();
+		return providerOfMonth;
+	}
+
+	public Object numberOfProvidersOfEntity(String email) {
+		
+		UserEntity user = userRepository.findByEmail(email);
+		Object numberOfProvidersOfEntity =  providerRepository.numberOfProvidersOfEntity( user.getId() );
+		
+		return numberOfProvidersOfEntity;
+	}
+
 	
 	
 	

@@ -40,8 +40,6 @@ public class ProvidersController {
 		
 		List<ProviderDto> providers = providerService.getProviders( principal.getName() );
 		
-		//ProviderResponseDetails providerResponse = modelMapper.map(providers, ProviderResponseDetails.class);
-		
 		Type listType  = new TypeToken<List<ProviderResponseDetails>>() {}.getType(); 
 		List<ProviderResponseDetails> providersResponse = modelMapper.map( providers , listType);
 		

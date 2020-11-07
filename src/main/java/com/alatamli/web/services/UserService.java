@@ -88,4 +88,11 @@ public class UserService {
 		
 	}
 
+	public Object numberOfUsersOfEntity(String email) {
+		
+		UserEntity user = userRepository.findByEmail(email);
+		Object numberOfUsersOfEntity = userRepository.numberOfUsersOfEntity( user.getEntity().getId() );//  user.getEntity().getUsers().size();		
+		return numberOfUsersOfEntity;
+	}
+
 }

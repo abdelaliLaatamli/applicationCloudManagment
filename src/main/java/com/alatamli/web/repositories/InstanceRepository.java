@@ -14,5 +14,9 @@ public interface InstanceRepository extends JpaRepository<InstanceEntity, Long> 
 	@Query(value = "SELECT COUNT( i.id ) as data , i.created_at as dates FROM instances i GROUP BY DAY(i.created_at)" , nativeQuery = true)
 	List<Object> getStatistiquesByDay();
 	
+	
+	@Query(value = "SELECT COUNT(id) FROM `instances` WHERE Month( `created_at` ) = month(now()) ;" , nativeQuery = true)
+	Object numberInstancesOfMonth();
+	
 
 }

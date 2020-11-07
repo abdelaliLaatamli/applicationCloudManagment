@@ -264,6 +264,15 @@ public class AccountService {
 		return instanceByAccount;
 	}
 
+	public Object numberAccountsOfEntity(String email) {
+		
+		UserEntity user = userRepository.findByEmail(email);
+		
+		Object instanceByAccount = accountRepository.numberAccountsOfEntity( user.getEntity().getId() );
+		
+		return instanceByAccount;
+	}
+
 	
 
 

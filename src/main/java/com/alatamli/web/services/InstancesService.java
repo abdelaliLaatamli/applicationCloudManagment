@@ -219,6 +219,13 @@ public class InstancesService {
 		return states;
 		
 	}
+
+	public Object numberInstancesOfMonth() {
+		Object numberInstancesOfMonth = instanceRepository.numberInstancesOfMonth();
+		return numberInstancesOfMonth;
+	}
+
+
 	
 	
 	
