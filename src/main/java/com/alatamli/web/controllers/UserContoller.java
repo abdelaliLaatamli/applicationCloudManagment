@@ -1,13 +1,17 @@
 package com.alatamli.web.controllers;
 
+import java.lang.reflect.Type;
 import java.security.Principal;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,6 +39,18 @@ public class UserContoller {
 	
 	@Autowired
 	ModelMapper modelMapper;
+	
+	
+	@GetMapping
+	public ResponseEntity<List<UserResponse>> getUsers( Principal principal ){
+		
+		List<UserDto> users = userService.getUsers( principal.getName() );
+		
+		Type listType  = new TypeToken<List<UserResponse>>() {}.getType(); 
+		List<UserResponse> listUsers = modelMapper.map( users , listType);
+		
+		return new ResponseEntity<List<UserResponse>>( listUsers , HttpStatus.OK);
+	}
 
 	@PostMapping("register")
 	public ResponseEntity<UserResponse>  register( @RequestBody UserRequest userRequest ) {
@@ -86,6 +102,8 @@ public class UserContoller {
 		return new ResponseEntity<> ( HttpStatus.NO_CONTENT );
 		
 	}
+	
+	
 	
 
 }

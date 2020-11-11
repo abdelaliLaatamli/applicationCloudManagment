@@ -1,5 +1,7 @@
 package com.alatamli.web.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +14,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
 	@Query( value = "SELECT COUNT(u.id) as number_users FROM users as u WHERE u.entity_id=:entityId" , nativeQuery = true )
 	Object numberOfUsersOfEntity( @Param("entityId") long entityId);
+
+	
+	@Query( value = "SELECT * FROM users as u WHERE u.entity_id=:entityId" , nativeQuery = true )
+	List<UserEntity> getAllByEntityId( @Param("entityId") long id);
 
 	
 }

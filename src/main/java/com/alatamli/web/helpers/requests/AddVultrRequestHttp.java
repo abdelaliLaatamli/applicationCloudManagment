@@ -6,7 +6,8 @@ public class AddVultrRequestHttp {
 	private String region;
 	private String plan = "vc2-1c-1gb"; 
 	private String label;
-	private int os_id = 127;
+	//private int os_id = 127;
+	private int os_id = 167;
 	private String backups = "disabled" ;
 	
 	

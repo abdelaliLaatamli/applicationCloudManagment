@@ -1,6 +1,10 @@
 package com.alatamli.web.services;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -93,6 +97,17 @@ public class UserService {
 		UserEntity user = userRepository.findByEmail(email);
 		Object numberOfUsersOfEntity = userRepository.numberOfUsersOfEntity( user.getEntity().getId() );//  user.getEntity().getUsers().size();		
 		return numberOfUsersOfEntity;
+	}
+
+	public List<UserDto> getUsers(String email) {
+		
+		UserEntity userAuthed = userRepository.findByEmail(email);
+		List<UserEntity> users = userRepository.getAllByEntityId( userAuthed.getEntity().getId());
+		
+		Type listType  = new TypeToken<List<UserDto>>() {}.getType(); 
+		List<UserDto> listUsers = modelMapper.map( users , listType);
+		
+		return listUsers;
 	}
 
 }
