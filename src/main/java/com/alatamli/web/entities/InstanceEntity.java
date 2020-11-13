@@ -10,6 +10,7 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -65,6 +66,12 @@ public class InstanceEntity {
 	
 	@OneToMany( cascade = CascadeType.ALL , mappedBy = "instance" )
 	private List<CronEntity> crons ;
+	
+	
+	@ManyToOne( optional = true , fetch = FetchType.EAGER)
+	@JoinColumn(name="user_id")
+	private UserEntity user;
+	
 	
 	public long getId() {
 		return id;

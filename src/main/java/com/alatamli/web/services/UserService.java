@@ -110,4 +110,13 @@ public class UserService {
 		return listUsers;
 	}
 
+	public List<Object> getStatistequesOfUsers(String email) {
+		
+		UserEntity userAuthed = userRepository.findByEmail(email);
+		
+		List<Object> users = userRepository.getUsersStatiques( userAuthed.getEntity().getId());
+		
+		return users;
+	}
+
 }

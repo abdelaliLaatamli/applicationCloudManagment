@@ -51,7 +51,8 @@ public class UserContoller {
 		
 		return new ResponseEntity<List<UserResponse>>( listUsers , HttpStatus.OK);
 	}
-
+	
+	
 	@PostMapping("register")
 	public ResponseEntity<UserResponse>  register( @RequestBody UserRequest userRequest ) {
 		
@@ -95,9 +96,7 @@ public class UserContoller {
 	@DeleteMapping("/{userId}")
 	public ResponseEntity<Object> deleteUser( @PathVariable("userId") long userId , Principal principal ) {
 		
-			
 		userService.deleteUser( userId , principal.getName() );
-	
 		
 		return new ResponseEntity<> ( HttpStatus.NO_CONTENT );
 		

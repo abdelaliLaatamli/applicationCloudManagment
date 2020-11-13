@@ -18,6 +18,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	
 	@Query( value = "SELECT * FROM users as u WHERE u.entity_id=:entityId" , nativeQuery = true )
 	List<UserEntity> getAllByEntityId( @Param("entityId") long id);
+	
+	
+	@Query( value = "SELECT u.username , ( SELECT COUNT(id) as instances from instances as i WHERE i.user_id=u.id) as instances ,"
+			+ " ( SELECT COUNT(i.id) as instances from instances as i WHERE i.user_id=u.id and month(i.created_at)=month(now())-1 ) as last_month "
+			+ "	from users as u WHERE u.entity_id=:entityId ORDER BY `instances` DESC LIMIT 6" , nativeQuery = true )
+	List<Object> getUsersStatiques( @Param("entityId") long id);
 
 	
 }

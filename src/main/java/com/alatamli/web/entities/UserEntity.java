@@ -1,6 +1,7 @@
 package com.alatamli.web.entities;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.alatamli.web.enums.UserRole;
 
@@ -48,6 +50,9 @@ public class UserEntity {
 	
 	@ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL , mappedBy = "users")
 	private Set<AccountEntity> accounts = new HashSet<>();
+	
+    @OneToMany( cascade = CascadeType.ALL )
+    private List<InstanceEntity> instances ;
 
 	
 	public UserRole getRole() {
