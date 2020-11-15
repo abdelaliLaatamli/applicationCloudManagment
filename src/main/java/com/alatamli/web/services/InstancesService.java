@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 import com.alatamli.web.entities.AccountOneKeyEntity;
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
+import com.alatamli.web.entities.UserEntity;
 import com.alatamli.web.helpers.DigitaloceanCloudClient;
 import com.alatamli.web.helpers.ICloudClient;
 import com.alatamli.web.helpers.VultrCloudClient;
 import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.InstanceRepository;
+import com.alatamli.web.repositories.UserRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.alatamli.web.shared.dto.InstanceDto;
@@ -31,6 +33,10 @@ public class InstancesService {
 	
 	@Autowired
 	InstanceRepository instanceRepository;
+	
+	
+	@Autowired 
+	UserRepository userRepository;
 	
 	@Autowired
 	ModelMapper modelMapper;
@@ -223,6 +229,24 @@ public class InstancesService {
 	public Object numberInstancesOfMonth() {
 		Object numberInstancesOfMonth = instanceRepository.numberInstancesOfMonth();
 		return numberInstancesOfMonth;
+	}
+
+	public List<Object> getnumberInstancesOfProvider(String email) {
+		
+		UserEntity userAuthed = userRepository.findByEmail(email);
+		
+		List<Object> providersCount = instanceRepository.getNumberInstancesByProvider( userAuthed.getEntity().getId() );
+		
+		return providersCount; 
+
+	}
+
+	public List<Object> getInstancesOfEntities(int month) {
+		
+		List<Object> providersCount = instanceRepository.getNumberInstancesByProviderMonth( month );
+		
+		return providersCount; 
+
 	}
 
 

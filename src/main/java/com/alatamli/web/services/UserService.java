@@ -27,6 +27,7 @@ public class UserService {
 	
 	@Autowired
 	UserRepository userRepository;
+	
 
 	public UserDto updateUser(long userId, UserDto user, String email ) {
 		
@@ -118,5 +119,7 @@ public class UserService {
 		
 		return users;
 	}
+
+
 
 }
