@@ -37,5 +37,11 @@ public interface InstanceRepository extends JpaRepository<InstanceEntity, Long> 
 			"      WHERE aaaaa.entity_id=eee.id ) , 0 ) as dd" + 
 			"    from entities as eee" , nativeQuery = true)
 	List<Object> getNumberInstancesByProviderMonth( @Param("month") int month);
+
+	
+	@Query(value = "select e.name , ( select count(i.id) as count_instances from instances as i , accounts as a , entities_providers as ep"
+			+ " WHERE ep.entity_id=e.id and a.provider_id=ep.provider_id and i.account_id=a.id and month(i.created_at)=:month ) as count_of_month"
+			+ " from entities as e ;" , nativeQuery = true)
+	List<Object> getStateOfEntitiesByMonth(@Param("month") int month);
 	
 }

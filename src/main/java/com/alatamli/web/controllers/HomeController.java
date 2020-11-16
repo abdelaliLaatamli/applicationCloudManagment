@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,10 +56,10 @@ public class HomeController {
 		return new ResponseEntity<List<Object>>( numbers , HttpStatus.OK);
 	}
 	
-	@GetMapping("/instancesByAccount")
-	public ResponseEntity<List<Object>> getNumberInstanceByAccount( ){
+	@GetMapping("/instancesByAccount/{limit}")
+	public ResponseEntity<List<Object>> getNumberInstanceByAccount( @PathVariable int limit ){
 		
-		List<Object> instanceByAccount = accountService.getNumberInstanceByAccount();
+		List<Object> instanceByAccount = accountService.getNumberInstanceByAccount( limit );
 		
 		return new ResponseEntity<List<Object>>( instanceByAccount , HttpStatus.OK);
 	}

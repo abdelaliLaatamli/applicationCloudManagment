@@ -249,6 +249,14 @@ public class InstancesService {
 
 	}
 
+	public List<Object> getStateOfEntities(int month) {
+		
+		List<Object> providersCount = instanceRepository.getStateOfEntitiesByMonth( month );
+		
+		return providersCount; 
+
+	}
+
 
 	
 	

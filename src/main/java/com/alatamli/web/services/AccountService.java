@@ -259,8 +259,8 @@ public class AccountService {
 		return numbers;
 	}
 
-	public List<Object> getNumberInstanceByAccount() {
-		List<Object> instanceByAccount = accountRepository.getNumberInstanceByAccount();
+	public List<Object> getNumberInstanceByAccount( int limit ) {
+		List<Object> instanceByAccount = accountRepository.getNumberInstanceByAccount( limit );
 		return instanceByAccount;
 	}
 
