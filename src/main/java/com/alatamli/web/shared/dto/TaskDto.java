@@ -1,6 +1,6 @@
 package com.alatamli.web.shared.dto;
 
-import java.util.Date;
+import java.time.Instant;
 
 public class TaskDto {
 
@@ -9,12 +9,30 @@ public class TaskDto {
 	private String operationType;
 	private boolean isStarted;
 	private boolean isStoped;
-	private Date lastExecute;
-	private Date createdAt;
-	private Date UpdatedAt;
+	private Instant lastExecute;
+	private Instant createdAt;
+	private Instant UpdatedAt;
 	private InstanceDto instance;
 	
 	
+	public Instant getLastExecute() {
+		return lastExecute;
+	}
+	public void setLastExecute(Instant lastExecute) {
+		this.lastExecute = lastExecute;
+	}
+	public Instant getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(Instant createdAt) {
+		this.createdAt = createdAt;
+	}
+	public Instant getUpdatedAt() {
+		return UpdatedAt;
+	}
+	public void setUpdatedAt(Instant updatedAt) {
+		UpdatedAt = updatedAt;
+	}
 	public long getId() {
 		return id;
 	}
@@ -44,24 +62,6 @@ public class TaskDto {
 	}
 	public void setStoped(boolean isStoped) {
 		this.isStoped = isStoped;
-	}
-	public Date getLastExecute() {
-		return lastExecute;
-	}
-	public void setLastExecute(Date lastExecute) {
-		this.lastExecute = lastExecute;
-	}
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-	public Date getUpdatedAt() {
-		return UpdatedAt;
-	}
-	public void setUpdatedAt(Date updatedAt) {
-		UpdatedAt = updatedAt;
 	}
 	public InstanceDto getInstance() {
 		return instance;

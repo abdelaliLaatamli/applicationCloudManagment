@@ -1,6 +1,6 @@
 package com.alatamli.web.responses;
 
-import java.util.Date;
+import java.time.Instant;
 
 
 public class TaskResponse {
@@ -10,9 +10,9 @@ public class TaskResponse {
 	private String operationType;
 	private boolean isStarted;
 	private boolean isStoped;
-	private Date lastExecute;
-	private Date createdAt;
-	private Date UpdatedAt;
+	private Instant lastExecute;
+	private Instant createdAt;
+	private Instant UpdatedAt;
 	private InstanceResponse instance;
 	
 	public long getId() {
@@ -45,22 +45,22 @@ public class TaskResponse {
 	public void setStoped(boolean isStoped) {
 		this.isStoped = isStoped;
 	}
-	public Date getLastExecute() {
+	public Instant getLastExecute() {
 		return lastExecute;
 	}
-	public void setLastExecute(Date lastExecute) {
+	public void setLastExecute(Instant lastExecute) {
 		this.lastExecute = lastExecute;
 	}
-	public Date getCreatedAt() {
+	public Instant getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(Instant createdAt) {
 		this.createdAt = createdAt;
 	}
-	public Date getUpdatedAt() {
+	public Instant getUpdatedAt() {
 		return UpdatedAt;
 	}
-	public void setUpdatedAt(Date updatedAt) {
+	public void setUpdatedAt(Instant updatedAt) {
 		UpdatedAt = updatedAt;
 	}
 	public InstanceResponse getInstance() {

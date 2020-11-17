@@ -1,6 +1,6 @@
 package com.alatamli.web.entities;
 
-import java.util.Date;
+import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,14 +29,15 @@ public class CronEntity {
 	private boolean isStoped  = false;
 	
 	@Column(nullable = true)
-	private Date lastExecute;
+	private Instant lastExecute;
 	
 	@Column( nullable = false )
-	private Date createdAt;
+	private Instant createdAt = Instant.now();
 	
 	@Column( nullable = false)
-	private Date UpdatedAt;
+	private Instant UpdatedAt;
 	
+
 	@ManyToOne
 	@JoinColumn(name = "instance_id")
 	private InstanceEntity instance;
@@ -81,29 +82,6 @@ public class CronEntity {
 		this.isStoped = isStoped;
 	}
 
-	public Date getLastExecute() {
-		return lastExecute;
-	}
-
-	public void setLastExecute(Date lastExecute) {
-		this.lastExecute = lastExecute;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return UpdatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		UpdatedAt = updatedAt;
-	}
 
 	public InstanceEntity getInstance() {
 		return instance;
@@ -111,6 +89,30 @@ public class CronEntity {
 
 	public void setInstance(InstanceEntity instance) {
 		this.instance = instance;
+	}
+	
+	public Instant getLastExecute() {
+		return lastExecute;
+	}
+
+	public void setLastExecute(Instant lastExecute) {
+		this.lastExecute = lastExecute;
+	}
+
+	public Instant getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Instant createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Instant getUpdatedAt() {
+		return UpdatedAt;
+	}
+
+	public void setUpdatedAt(Instant updatedAt) {
+		UpdatedAt = updatedAt;
 	}
 	
 	
