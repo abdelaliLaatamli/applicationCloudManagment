@@ -83,6 +83,13 @@ public class TaskService {
 		
 	}
 
+	public void taskExecuter() {
+
+		List<CronEntity> tasksToExecute= cronRepository.tasksToRun();
+		System.out.println( tasksToExecute );
+		
+	}
+
 
 	
 	

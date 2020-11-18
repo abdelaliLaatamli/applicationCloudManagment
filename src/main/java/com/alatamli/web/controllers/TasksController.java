@@ -79,4 +79,13 @@ public class TasksController {
 		return new ResponseEntity<Object>( HttpStatus.NO_CONTENT );
 	}
 
+	
+	
+	@GetMapping("/test")
+	private void testCron( ) {
+		
+		taskService.taskExecuter();
+		
+		
+	}
 }
