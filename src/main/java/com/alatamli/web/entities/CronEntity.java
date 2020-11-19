@@ -26,7 +26,7 @@ public class CronEntity {
 	private boolean isStarted = false;
 	
 	@Column(nullable = false)
-	private boolean isStoped  = false;
+	private boolean isStopped  = false;
 	
 	@Column(nullable = true)
 	private Instant lastExecute;
@@ -75,11 +75,11 @@ public class CronEntity {
 	}
 
 	public boolean isStoped() {
-		return isStoped;
+		return isStopped;
 	}
 
 	public void setStoped(boolean isStoped) {
-		this.isStoped = isStoped;
+		this.isStopped = isStoped;
 	}
 
 
