@@ -2,21 +2,26 @@ package com.alatamli.web.helpers;
 
 
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Async;
 
 import com.alatamli.web.entities.AccountEntity;
+import com.alatamli.web.entities.CronEntity;
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.requests.AddDropletRequestHttp;
 import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.helpers.responses.digitalocean.DropletsListResponse;
+import com.alatamli.web.helpers.responses.digitalocean.OneDropleteHttpResponse;
 import com.alatamli.web.repositories.AccountRepository;
+import com.alatamli.web.repositories.CronRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.responses.InstanceResponse;
@@ -36,13 +41,31 @@ public class DigitaloceanCloudClient implements ICloudClient {
 	private AccountRepository accountRepository;
 	private InstanceRepository instanceRepository;
 	private AccountOneKeyDto account ;
+	private CronRepository cronRepository;
 	private ModelMapper modelMapper;
 	
 	
-	public DigitaloceanCloudClient( AccountOneKeyDto account , InstanceRepository instanceRepository , AccountRepository accountRepository) {
+	public DigitaloceanCloudClient( 
+			AccountOneKeyDto account ,
+			InstanceRepository instanceRepository ,
+			AccountRepository accountRepository
+		) {
 		this.account = account ;
 		this.instanceRepository = instanceRepository;
 		this.accountRepository = accountRepository;
+		this.modelMapper = new ModelMapper();
+	}
+	
+	public DigitaloceanCloudClient( 
+			AccountOneKeyDto account ,
+			InstanceRepository instanceRepository ,
+			AccountRepository accountRepository ,
+			CronRepository cronRepository
+		) {
+		this.account = account ;
+		this.instanceRepository = instanceRepository;
+		this.accountRepository = accountRepository;
+		this.cronRepository = cronRepository;
 		this.modelMapper = new ModelMapper();
 	}
 	
@@ -193,7 +216,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 			}
 			
 		}
-		System.out.println( names );
+		//System.out.println( names );
 		return names ;
 
 	}
@@ -256,7 +279,83 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		return response;
 	}
 
+	@Override
+	public void restartInstance( CronEntity taskEntity ) throws UnirestException, JsonMappingException, JsonProcessingException, InterruptedException {
+		
+		System.out.println("op");
+		//ObjectMapper mapper = new ObjectMapper();
+		String instanceId = taskEntity.getInstance().getInstanceId();
+		
+		taskEntity.setStarted(true);
+		taskEntity.setUpdatedAt(Instant.now());
+		taskEntity.setLastExecute(Instant.now());
+		
+		CronEntity newTaskEntity = this.cronRepository.save(taskEntity);
+		
+		HttpResponse<JsonNode> response ;
+		
+		response = this.updateOptionsHttp("{\"type\":\"shutdown\"}" , instanceId );
+		
+		if( response.getStatus() > 300 ) {
+			
+			newTaskEntity.setStarted(false);
+			newTaskEntity.setUpdatedAt(Instant.now());
+			newTaskEntity.setLastExecute(Instant.now());
+			this.cronRepository.save(newTaskEntity);
+			throw new RuntimeException( response.getBody().toString());
+		}
+			
+		
+		Thread.sleep(30000);
+		/*
+		 * 
+		response = this.getInstnaceHttp( instanceId );
+		String retryHeader = response.getBody().toString(); 
+		if( response.getStatus() >= 300 )
+			throw new RuntimeException( response.getBody().toString());
+		OneDropleteHttpResponse droplete = mapper.readValue(retryHeader, new TypeReference<OneDropleteHttpResponse>() {});
+		
+		 */
+		response = this.updateOptionsHttp("{\"type\":\"power_on\"}" , instanceId );
+		
+		if( response.getStatus() > 300 ) {
+			newTaskEntity.setStarted(false);
+			newTaskEntity.setUpdatedAt(Instant.now());
+			newTaskEntity.setLastExecute(Instant.now());
+			this.cronRepository.save(newTaskEntity);
+			throw new RuntimeException( response.getBody().toString());
+		}
+		
+		newTaskEntity.setStarted(false);
+		newTaskEntity.setUpdatedAt(Instant.now());
+		newTaskEntity.setLastExecute(Instant.now());
+		this.cronRepository.save(newTaskEntity);
+		
+		/*
+		response = this.getInstnaceHttp( instanceId );
+		retryHeader = response.getBody().toString(); 
+		if( response.getStatus() >= 300 )
+			throw new RuntimeException( response.getBody().toString());
+		droplete = mapper.readValue(retryHeader, new TypeReference<OneDropleteHttpResponse>() {});
+		//System.out.println( droplete.getDroplet().getStatus() );
+		 * 
+		 */
+		 
+		
+		
+	}
+
 	
+	
+	private HttpResponse<JsonNode> getInstnaceHttp( String instanceId ) throws UnirestException {
+		String url = "https://api.digitalocean.com/v2/droplets/"+instanceId ;
+		HttpResponse<JsonNode> response = Unirest.get(url)
+				.header("Authorization", "Bearer "+this.account.getToken())
+				.header("Content-Type", "application/json")
+				.asJson();
+		
+		return response;
+	}
 	
 
 	

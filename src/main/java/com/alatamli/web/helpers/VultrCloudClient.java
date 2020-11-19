@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.modelmapper.ModelMapper;
 
 import com.alatamli.web.entities.AccountEntity;
+import com.alatamli.web.entities.CronEntity;
 import com.alatamli.web.entities.InstanceEntity;
 import com.alatamli.web.entities.InstanceOtherEntity;
 import com.alatamli.web.helpers.requests.AddVultrRequestHttp;
@@ -275,6 +276,17 @@ public class VultrCloudClient implements ICloudClient {
 			
 		return response;
 	}
+
+
+	@Override
+	public void restartInstance(CronEntity taskEntity) throws com.mashape.unirest.http.exceptions.UnirestException,
+			JsonMappingException, JsonProcessingException, InterruptedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
 
 
 

@@ -7,14 +7,23 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.alatamli.web.entities.CronEntity;
 import com.alatamli.web.entities.InstanceEntity;
+import com.alatamli.web.helpers.DigitaloceanCloudClient;
+import com.alatamli.web.helpers.ICloudClient;
+import com.alatamli.web.helpers.VultrCloudClient;
+import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.CronRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.TaskRequestAction;
+import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.alatamli.web.shared.dto.TaskDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class TaskService {
@@ -22,9 +31,11 @@ public class TaskService {
 	@Autowired
 	CronRepository cronRepository;
 	
-	
 	@Autowired
 	InstanceRepository instanceRepository;
+	
+	@Autowired
+	AccountRepository accountRepository;
 	
 	@Autowired 
 	ModelMapper modelMapper;
@@ -83,10 +94,43 @@ public class TaskService {
 		
 	}
 
-	public void taskExecuter() {
+	public void taskExecuter() throws JsonMappingException, JsonProcessingException, UnirestException, InterruptedException {
+		
 
-		List<CronEntity> tasksToExecute= cronRepository.tasksToRun();
-		System.out.println( tasksToExecute );
+		List<CronEntity> tasksToExecute = cronRepository.tasksToRun();
+		
+//		System.out.println( tasksToExecute );
+		
+		
+		for (CronEntity cronEntity : tasksToExecute) {
+			
+			
+			AccountOneKeyDto accountDto = modelMapper.map(cronEntity.getInstance().getAccount(), AccountOneKeyDto.class);
+			
+			ICloudClient cloudClient ;
+			
+			switch (accountDto.getProvider().getName()) {
+				
+				case "digitalocean":
+					cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository , accountRepository , cronRepository);
+					break;
+				
+				case "vultr" :
+					cloudClient = new VultrCloudClient( accountDto , instanceRepository , accountRepository);
+					break;
+	
+				default:
+					throw new RuntimeException("This Provider not yet Supported");
+			}
+			
+			//cloudClient.restartInstance( cronEntity.getInstance().getInstanceId() , cronEntity );
+			
+
+			cloudClient.restartInstance( cronEntity );
+			
+		}
+		
+
 		
 	}
 
