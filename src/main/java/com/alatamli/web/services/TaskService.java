@@ -93,15 +93,14 @@ public class TaskService {
 		return newCronDto;
 		
 	}
-
+	
+	
 	public void taskExecuter() throws JsonMappingException, JsonProcessingException, UnirestException, InterruptedException {
 		
 
 		List<CronEntity> tasksToExecute = cronRepository.tasksToRun();
 		
-//		System.out.println( tasksToExecute );
-		
-		
+	
 		for (CronEntity cronEntity : tasksToExecute) {
 			
 			
@@ -130,7 +129,7 @@ public class TaskService {
 			
 		}
 		
-
+	
 		
 	}
 
