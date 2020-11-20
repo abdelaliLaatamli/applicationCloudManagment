@@ -18,15 +18,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.alatamli.web.requests.TaskRequest;
 import com.alatamli.web.requests.TaskRequestAction;
 import com.alatamli.web.responses.TaskResponse;
 import com.alatamli.web.services.TaskService;
 import com.alatamli.web.shared.dto.TaskDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @RestController
 @RequestMapping("tasks")
@@ -83,20 +79,20 @@ public class TasksController {
 	}
 
 	
-	
+	/*
 	@GetMapping("/o/test")
 	private void testCron( ) throws InterruptedException, JsonMappingException, JsonProcessingException, UnirestException {
 		
-		taskService.taskExecuter();
 		
-		/*
-		int i = 0;
-		while (i < 5) {
-		  //System.out.println(i);
-		  i++;
-		  Thread.sleep(20000);
+		List<CronEntity> tasksToRun = taskService.getTasksToRun();
+		
+		for (CronEntity taskToRun : tasksToRun) {
+			
+			taskService.runTask(taskToRun);
+			
 		}
-		*/
+		
 		
 	}
+	*/
 }

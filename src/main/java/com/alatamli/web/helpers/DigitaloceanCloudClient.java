@@ -280,7 +280,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 	@Override
 	public void restartInstance( CronEntity taskEntity ) throws UnirestException, JsonMappingException, JsonProcessingException, InterruptedException {
 		
-		System.out.println("op");
+		System.out.println("op "+taskEntity.getId());
 		//ObjectMapper mapper = new ObjectMapper();
 		String instanceId = taskEntity.getInstance().getInstanceId();
 		
@@ -344,7 +344,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 	}
 
 	
-	
+	/*
 	private HttpResponse<JsonNode> getInstnaceHttp( String instanceId ) throws UnirestException {
 		String url = "https://api.digitalocean.com/v2/droplets/"+instanceId ;
 		HttpResponse<JsonNode> response = Unirest.get(url)
@@ -355,7 +355,7 @@ public class DigitaloceanCloudClient implements ICloudClient {
 		return response;
 	}
 	
-
+*/
 	
 	
 }

@@ -99,8 +99,6 @@ public class TaskService {
 
 		List<CronEntity> tasksToExecute = cronRepository.tasksToRun();
 		
-//		System.out.println( tasksToExecute );
-		
 		
 		for (CronEntity cronEntity : tasksToExecute) {
 			
@@ -123,14 +121,43 @@ public class TaskService {
 					throw new RuntimeException("This Provider not yet Supported");
 			}
 			
-			//cloudClient.restartInstance( cronEntity.getInstance().getInstanceId() , cronEntity );
-			
 
 			cloudClient.restartInstance( cronEntity );
 			
 		}
 		
 
+		
+	}
+
+	public List<CronEntity> getTasksToRun() {
+		List<CronEntity> tasksToExecute = cronRepository.tasksToRun();
+		return tasksToExecute;
+	}
+
+	@Async
+	public void runTask(CronEntity taskToRun) throws JsonMappingException, JsonProcessingException, UnirestException, InterruptedException {
+		
+		AccountOneKeyDto accountDto = modelMapper.map(taskToRun.getInstance().getAccount(), AccountOneKeyDto.class);
+		
+		ICloudClient cloudClient ;
+		
+		switch (accountDto.getProvider().getName()) {
+			
+			case "digitalocean":
+				cloudClient = new DigitaloceanCloudClient(accountDto , instanceRepository , accountRepository , cronRepository);
+				break;
+			
+			case "vultr" :
+				cloudClient = new VultrCloudClient( accountDto , instanceRepository , accountRepository);
+				break;
+
+			default:
+				throw new RuntimeException("This Provider not yet Supported");
+		}
+		
+		cloudClient.restartInstance( taskToRun );
+		// TODO Auto-generated method stub
 		
 	}
 
