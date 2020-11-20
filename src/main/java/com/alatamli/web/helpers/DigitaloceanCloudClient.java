@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.scheduling.annotation.Async;
 
 import com.alatamli.web.entities.AccountEntity;
 import com.alatamli.web.entities.CronEntity;
@@ -19,7 +18,6 @@ import com.alatamli.web.helpers.requests.AddDropletRequestHttp;
 import com.alatamli.web.helpers.responses.InstanceResponseHttp;
 import com.alatamli.web.helpers.responses.digitalocean.DropletInstance;
 import com.alatamli.web.helpers.responses.digitalocean.DropletsListResponse;
-import com.alatamli.web.helpers.responses.digitalocean.OneDropleteHttpResponse;
 import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.CronRepository;
 import com.alatamli.web.repositories.InstanceRepository;
