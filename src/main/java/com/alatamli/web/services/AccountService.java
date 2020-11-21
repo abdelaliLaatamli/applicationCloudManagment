@@ -21,10 +21,13 @@ import com.alatamli.web.enums.UserRole;
 import com.alatamli.web.repositories.AccountRepository;
 import com.alatamli.web.repositories.ProviderRepository;
 import com.alatamli.web.repositories.UserRepository;
+import com.alatamli.web.requests.AccountActionsRequest;
 import com.alatamli.web.shared.dto.AccountDto;
 import com.alatamli.web.shared.dto.AccountFourKeysDto;
 import com.alatamli.web.shared.dto.AccountOneKeyDto;
 import com.alatamli.web.shared.dto.AccountTwoKeysDto;
+
+import net.bytebuddy.implementation.bytecode.Throw;
 
 @Service
 public class AccountService {
@@ -51,9 +54,20 @@ public class AccountService {
 		List<AccountDto> accounts = modelMapper.map( accountsEntity , listType);
 		
 		return accounts;
-		
 
 	}
+	
+	public AccountDto getAccount( long accountId ) {
+		
+		
+		AccountEntity accountEntity = accountRepository.findById(accountId).orElseThrow( () -> new IllegalArgumentException(" there is no Account by this id ") );
+		
+		AccountDto accountDto = modelMapper.map(accountEntity, AccountDto.class);
+		
+		return accountDto;
+		
+	}
+	
 
 	public AccountDto addTwoKeysAccount(AccountTwoKeysDto accountTwoKeysDto , long providerId , String email) {
 		
@@ -75,8 +89,6 @@ public class AccountService {
 			accountEntity.setRegions( na );
 		}	
 
-		
-		
 		
 		Set<UserEntity> users = accountEntity.getUsers();
 		users.add(user);
@@ -271,6 +283,58 @@ public class AccountService {
 		Object instanceByAccount = accountRepository.numberAccountsOfEntity( user.getEntity().getId() );
 		
 		return instanceByAccount;
+	}
+
+	public AccountDto updateAction(long accountId, AccountActionsRequest accountActionsRequest, String Email) {
+		
+		AccountDto newAccountDto = null ;
+		Set<UserEntity> usersOfAccout = null;
+		AccountEntity newAccount = null ;
+		
+		AccountEntity accountEntity = accountRepository.findById(accountId).orElseThrow( () -> new IllegalArgumentException("there is no Account by this id") );
+		
+		UserEntity userEntity = userRepository.findById(accountActionsRequest.getUserId()).orElseThrow( () -> new IllegalArgumentException("there is no User by this id") );
+		
+		switch ( accountActionsRequest.getAction() ) {
+		
+		case "attach":
+			
+			usersOfAccout = accountEntity.getUsers();
+			
+			if( usersOfAccout.contains(userEntity) ) throw new RuntimeException("User Already Attached");
+			
+			usersOfAccout.add(userEntity);
+			
+			accountEntity.setUsers(usersOfAccout);
+			
+			newAccount = accountRepository.save(accountEntity);
+			
+			newAccountDto = modelMapper.map( newAccount , AccountDto.class );
+			
+			break;
+			
+		case "detach": 
+			
+			usersOfAccout = accountEntity.getUsers();
+			
+			if( !usersOfAccout.contains(userEntity) ) throw new RuntimeException("User not Attached to Account ");
+			
+			usersOfAccout.remove(userEntity);
+			
+			accountEntity.setUsers(usersOfAccout);
+			
+			newAccount = accountRepository.save(accountEntity);
+			
+			newAccountDto = modelMapper.map( newAccount , AccountDto.class );
+			
+			
+			break;
+
+		default:
+			throw new RuntimeException("action Invalide");
+		}
+		
+		return newAccountDto;
 	}
 
 	

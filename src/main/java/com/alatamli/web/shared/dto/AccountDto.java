@@ -1,5 +1,8 @@
 package com.alatamli.web.shared.dto;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class AccountDto {
 
@@ -9,8 +12,15 @@ public class AccountDto {
 	protected boolean isActive = true;
 	protected ProviderDto provider;
 	protected SshKeyDto sshKey ;
+	protected Set<UserDto> users = new HashSet<>();
 	
 	
+	public Set<UserDto> getUsers() {
+		return users;
+	}
+	public void setUsers(Set<UserDto> users) {
+		this.users = users;
+	}
 	public SshKeyDto getSshKey() {
 		return sshKey;
 	}

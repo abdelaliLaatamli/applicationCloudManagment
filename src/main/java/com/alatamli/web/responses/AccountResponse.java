@@ -1,5 +1,8 @@
 package com.alatamli.web.responses;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class AccountResponse {
 	
@@ -8,6 +11,7 @@ public class AccountResponse {
 	protected String name;
 	protected String proxy;
 	protected boolean isActive;
+	protected Set<UserResponse> users = new HashSet<>();
 	
 	public long getId() {
 		return id;
@@ -33,12 +37,12 @@ public class AccountResponse {
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
+	public Set<UserResponse> getUsers() {
+		return users;
+	}
+	public void setUsers(Set<UserResponse> users) {
+		this.users = users;
+	}
 	
 	
-	/*
-	private ProviderResponce provider;
-	private SshKeyResponse sshKey;
-	private List<UserEntity> users;
-	private List<InstanceEntity> instances ;
-*/
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alatamli.web.requests.AccountRequest;
+import com.alatamli.web.requests.AccountActionsRequest;
 import com.alatamli.web.responses.AccountResponse;
 import com.alatamli.web.responses.AccountResponseFourKeys;
 import com.alatamli.web.responses.AccountResponseOneKey;
@@ -82,6 +83,18 @@ public class AccountController {
 		
 		
 		return new ResponseEntity<List<AccountResponse>>( accountsResponse , HttpStatus.OK );
+	}
+	
+	
+	@GetMapping("/g/{accountId}")
+	public ResponseEntity<AccountResponse> getAccount( @PathVariable long accountId ){
+		
+		AccountDto accountDto = accountService.getAccount( accountId );
+		
+		AccountResponse accountResponse = modelMapper.map(accountDto, AccountResponse.class);
+		
+		return new ResponseEntity<AccountResponse>( accountResponse , HttpStatus.OK );
+		
 	}
 	
 	
@@ -163,6 +176,15 @@ public class AccountController {
 		
 	}
 	
+	@PutMapping(path = "linkaction/{accountId}")
+	public ResponseEntity<AccountResponse> linkaction( @PathVariable long accountId , @RequestBody AccountActionsRequest accountActionsRequest , Principal principal ){
+		
+		AccountDto newAccount = accountService.updateAction( accountId , accountActionsRequest , principal.getName());
+		
+		AccountResponse accountResponse = modelMapper.map(newAccount, AccountResponse.class);
+		
+		return new ResponseEntity<AccountResponse> ( accountResponse , HttpStatus.ACCEPTED );
+	}
 	
 	
 	@DeleteMapping(path = "/{accountId}")
