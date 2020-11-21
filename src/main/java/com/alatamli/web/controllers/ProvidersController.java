@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alatamli.web.requests.ProviderAttachRequest;
+import com.alatamli.web.requests.ProviderActionsRequest;
 import com.alatamli.web.requests.ProviderRequest;
 import com.alatamli.web.responses.ProviderResponseDetails;
 import com.alatamli.web.services.ProviderService;
@@ -72,7 +72,7 @@ public class ProvidersController {
 		
 		return new ResponseEntity<ProviderResponseDetails>( providerResponse , HttpStatus.ACCEPTED );
 	}
-	
+	/*
 	@PutMapping("/{providerId}/entity/attach")
 	public ResponseEntity<ProviderResponseDetails> attachEntitiesToProvider(
 				@PathVariable("providerId") long providerId ,
@@ -94,8 +94,31 @@ public class ProvidersController {
 		return provider ;
 		
 	}
+	*/
 	
-	
+	@PutMapping("actions/{providerId}")
+	public ResponseEntity<ProviderResponseDetails> attachEntitiesToProvider(
+				@PathVariable("providerId") long providerId ,
+				@RequestBody ProviderActionsRequest providerActionsRequest ,
+				Principal principal
+	){
+			
+		ProviderDto providerDto = providerService.attachProviderToEntity( providerId , providerActionsRequest );
+		
+		ProviderResponseDetails providerResponse= modelMapper.map(providerDto, ProviderResponseDetails.class);
+		
+		return new ResponseEntity<ProviderResponseDetails>( providerResponse , HttpStatus.ACCEPTED );
+	}
+	/*
+	@PutMapping("actions/{providerId}")
+	public ProviderDto deattachEntitiesToProvider( @PathVariable("providerId") long providerId , @RequestBody ProviderRequest providerRequest ){
+		
+		ProviderDto provider = modelMapper.map(providerRequest, ProviderDto.class); 
+		
+		return provider ;
+		
+	}
+	*/
 	
 	
 	

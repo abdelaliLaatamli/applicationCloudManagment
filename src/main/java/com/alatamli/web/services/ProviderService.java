@@ -15,7 +15,7 @@ import com.alatamli.web.entities.UserEntity;
 import com.alatamli.web.repositories.EntityRepository;
 import com.alatamli.web.repositories.ProviderRepository;
 import com.alatamli.web.repositories.UserRepository;
-import com.alatamli.web.requests.ProviderAttachRequest;
+import com.alatamli.web.requests.ProviderActionsRequest;
 import com.alatamli.web.shared.dto.ProviderDto;
 
 @Service
@@ -83,8 +83,45 @@ public class ProviderService {
 		return providerDto;
 	}
 
-	public ProviderDto attachProviderToEntity(long providerId, ProviderAttachRequest entityList) {
-
+	public ProviderDto attachProviderToEntity(long providerId, ProviderActionsRequest providerActionsRequest) {
+		
+		ProviderEntity providerEntity = providerRepository.findById(providerId)
+				.orElseThrow(( ) -> new IllegalArgumentException("there is no provider of this id , please check id"));
+		
+		EntityEntity entityEntity = entityRepository.findById(providerActionsRequest.getEntityId())
+				.orElseThrow(( ) -> new IllegalArgumentException("there is no provider of this id , please check id"));
+		
+		Set<EntityEntity> entitiesOfProvider = null ;
+		ProviderEntity updatedProvider = null ;
+		switch (providerActionsRequest.getAction()) {
+			case "attach":
+				
+				entitiesOfProvider = providerEntity.getEntities();
+				if( entitiesOfProvider.contains(entityEntity) ) throw new RuntimeException("Entity Already Attached");
+				entityEntity.getProviders().add(providerEntity);
+				entitiesOfProvider.add(entityEntity);
+				providerEntity.setEntities(entitiesOfProvider);
+				updatedProvider = providerRepository.save( providerEntity ); 
+				
+				break;
+			case "detach" :
+				entitiesOfProvider = providerEntity.getEntities();
+				if( !entitiesOfProvider.contains(entityEntity) ) throw new RuntimeException("Entity not Attached to Account ") ;
+				entityEntity.getProviders().remove(providerEntity);
+				entitiesOfProvider.remove(entityEntity);
+				providerEntity.setEntities(entitiesOfProvider);
+			    updatedProvider = providerRepository.save( providerEntity ); 
+				
+				break;
+	
+			default:
+				break;
+		}
+		ProviderDto providerDto = modelMapper.map(updatedProvider, ProviderDto.class);
+		
+		
+		return providerDto;
+		/*
 		ProviderEntity providerEntity = providerRepository.findById(providerId)
 				.orElseThrow(( ) -> new IllegalArgumentException("there is no provider of this id , please check id"));
 		
@@ -112,6 +149,7 @@ public class ProviderService {
 		ProviderDto providerDto = modelMapper.map(updatedProvider, ProviderDto.class);
 		
 		return providerDto;
+		*/
 	}
 
 	public Object getNumberProviderOfMonth() {
