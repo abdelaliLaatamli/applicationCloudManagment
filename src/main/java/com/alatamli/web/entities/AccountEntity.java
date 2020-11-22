@@ -47,7 +47,7 @@ public class AccountEntity {
 	@OneToOne(mappedBy = "account" , cascade = CascadeType.ALL)
 	protected SshKeyEntity sshKey;
 	
-	@ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
 	@JoinTable( name="accounts_users" ,
 				joinColumns = { @JoinColumn(name="account_id") } ,
 				inverseJoinColumns = {@JoinColumn(name="user_id")}

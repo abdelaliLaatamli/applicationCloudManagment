@@ -149,7 +149,7 @@ public class TaskService {
 				break;
 			
 			case "vultr" :
-				cloudClient = new VultrCloudClient( accountDto , instanceRepository , accountRepository);
+				cloudClient = new VultrCloudClient( accountDto , instanceRepository , accountRepository , cronRepository);
 				break;
 
 			default:

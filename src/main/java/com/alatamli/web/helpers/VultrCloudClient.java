@@ -2,6 +2,7 @@ package com.alatamli.web.helpers;
 
 
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,6 +20,7 @@ import com.alatamli.web.helpers.responses.vultr.CreateInstanceResponse;
 import com.alatamli.web.helpers.responses.vultr.InstanceVultr;
 import com.alatamli.web.helpers.responses.vultr.InstanceVultrList;
 import com.alatamli.web.repositories.AccountRepository;
+import com.alatamli.web.repositories.CronRepository;
 import com.alatamli.web.repositories.InstanceRepository;
 import com.alatamli.web.requests.AddInstanceRequest;
 import com.alatamli.web.responses.InstanceResponse;
@@ -41,13 +43,31 @@ public class VultrCloudClient implements ICloudClient {
 	
 	private AccountRepository accountRepository;
 	private InstanceRepository instanceRepository;
+	private CronRepository cronRepository;
 	private AccountOneKeyDto account ;
 	private ModelMapper modelMapper;
 	
-	public VultrCloudClient( AccountOneKeyDto account , InstanceRepository instanceRepository , AccountRepository accountRepository ) {
+	public VultrCloudClient( 
+			AccountOneKeyDto account ,
+			InstanceRepository instanceRepository ,
+			AccountRepository accountRepository 
+		) {
 		this.account = account ;
 		this.instanceRepository = instanceRepository;
 		this.accountRepository = accountRepository;
+		this.modelMapper = new ModelMapper();
+	}
+	
+	public VultrCloudClient( 
+			AccountOneKeyDto account ,
+			InstanceRepository instanceRepository ,
+			AccountRepository accountRepository, 
+			CronRepository cronRepository
+		) {
+		this.account = account ;
+		this.instanceRepository = instanceRepository;
+		this.accountRepository = accountRepository;
+		this.cronRepository = cronRepository;
 		this.modelMapper = new ModelMapper();
 	}
 	
@@ -281,8 +301,50 @@ public class VultrCloudClient implements ICloudClient {
 	@Override
 	public void restartInstance(CronEntity taskEntity) throws com.mashape.unirest.http.exceptions.UnirestException,
 			JsonMappingException, JsonProcessingException, InterruptedException {
-		// TODO Auto-generated method stub
 		
+		
+		System.out.println("op "+taskEntity.getId());
+		
+		String instanceId = taskEntity.getInstance().getInstanceId();
+		
+		taskEntity.setStarted(true);
+		taskEntity.setUpdatedAt(Instant.now());
+		taskEntity.setLastExecute(Instant.now());
+		
+		CronEntity newTaskEntity = this.cronRepository.save(taskEntity);
+		
+		HttpResponse<JsonNode> response = null ; 
+		
+		response = this.updateOptionsHttp( "halt"  , instanceId );
+		
+		if( response.getStatus() > 300 ) {
+			
+			newTaskEntity.setStarted(false);
+			newTaskEntity.setUpdatedAt(Instant.now());
+			newTaskEntity.setLastExecute(Instant.now());
+			this.cronRepository.save(newTaskEntity);
+			throw new RuntimeException( response.getBody().toString());
+		}
+			
+		
+		Thread.sleep(30000);
+		
+		
+		response = this.updateOptionsHttp( "start" , instanceId );
+		
+		if( response.getStatus() > 300 ) {
+			newTaskEntity.setStarted(false);
+			newTaskEntity.setUpdatedAt(Instant.now());
+			newTaskEntity.setLastExecute(Instant.now());
+			this.cronRepository.save(newTaskEntity);
+			throw new RuntimeException( response.getBody().toString());
+		}
+		
+		newTaskEntity.setStarted(false);
+		newTaskEntity.setUpdatedAt(Instant.now());
+		newTaskEntity.setLastExecute(Instant.now());
+		this.cronRepository.save(newTaskEntity);
+
 	}
 
 
