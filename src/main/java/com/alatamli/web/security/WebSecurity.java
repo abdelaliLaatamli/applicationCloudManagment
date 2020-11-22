@@ -29,9 +29,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 			.cors().and()
 			.csrf().disable()
 			.authorizeRequests()
-				// .antMatchers(HttpMethod.POST , "/users/**").permitAll() // request don't need be authenticated
-				.anyRequest().authenticated().and() // others must be authenticated 
-			// .addFilter(new AuthenticationFilter(authenticationManager()));
+//			.antMatchers("/v2/api-docs" , "/v3/api-docs", "/swagger-resources/**" ,"/swagger-ui/**", "/swagger-ui.html**","/webjars/**").permitAll()
+			.antMatchers("/v2/api-docs" , "/swagger-resources/**" ,"/swagger-ui/**" ,"/swagger-ui.html**" , "/webjars/**" , "/springfox").permitAll()
+
+			.anyRequest().authenticated().and() // others must be authenticated 
 			.addFilter( getAuthenticationFilter() )
 			.addFilter(new AuthorizationFilter(authenticationManager()))
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
